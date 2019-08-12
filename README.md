@@ -2,12 +2,32 @@
 Avia-X: Real-time Supervised Aviation Experience System  
 The General Aviathon Team 15
 
-## Usage
-In terminal, run
-```console
+## Installation
+Clone the repo on your device:
+```bash
 git clone https://github.com/lzyang2000/Avia-X.git
-cd Avia-X
-source bash.sh
+```
+
+## Usage
+
+First, run 
+```bash
+pip install -r requirements.txt
+```
+
+Also, make sure you have installed opencv-python: 
+```bash
+pip install opencv-python
+```
+
+If you are running on a Raspberry Pi, install picamera:
+```bash
+pip install picamera
+```
+
+To start the demo, run
+```console
+source demo.sh
 ```
 
 ## Emotion Recognition
