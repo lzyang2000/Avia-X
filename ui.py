@@ -7,7 +7,7 @@ def lumi_change(slider_value):
     if int(slider_value) > 7:
     	app.bg = (243, 231, 211)
     else:
-    	app.bg = 
+    	app.bg = (255, 250, 229)
 def pressure_change(slider_value):
     textbox_pressure.value = slider_value
 app = App()

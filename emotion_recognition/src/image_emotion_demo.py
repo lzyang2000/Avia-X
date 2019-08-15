@@ -6,8 +6,8 @@ import atexit
 import cv2
 from keras.models import load_model
 import numpy as np
-import picamera
-import picamera.array
+# import picamera
+# import picamera.array
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
