@@ -2,6 +2,38 @@
 Avia-X: Real-time Supervised Aviation Experience System  
 The General Aviathon Team 15
 
-## Facial Recognition
-state of the art model with pretrained weights available (PyTorch)  
-https://github.com/WuJie1010/Facial-Expression-Recognition.Pytorch
+## Installation
+Clone the repo on your device:
+```bash
+git clone https://github.com/lzyang2000/Avia-X.git
+```
+
+## Usage
+
+First, run 
+```bash
+pip install -r requirements.txt
+```
+
+Also, make sure you have installed opencv-python: 
+```bash
+pip install opencv-python
+```
+
+If you are running on a Raspberry Pi, install picamera:
+```bash
+pip install picamera
+```
+
+To start the demo, run
+```console
+source demo.sh
+```
+
+## Emotion Recognition
+TensorFlow model for emotion recognition, using a face object detector to localize faces and runs a emotion classifier on each face<sup id="a1">[1](#f1)</sup>.
+
+
+## Citations
+<b id="f1">[1]</b> https://github.com/oarriaga/face_classification [↩](#a1)
+
