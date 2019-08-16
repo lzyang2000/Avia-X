@@ -90,7 +90,7 @@ class Agent:
         for (username, user_id) in user_credentials:
             if username == user_input:
                 return user_id
-    
+
     def log_out(self):
         self.user = None
         current_user_data = database.find()
