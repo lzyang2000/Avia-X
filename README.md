@@ -15,7 +15,11 @@ First, run
 pip install -r requirements.txt
 ```
 
-Also, make sure you have installed opencv-python: 
+### Emotion Recognition Demo
+
+TensorFlow model for emotion recognition, using a face object detector to localize faces and runs a emotion classifier on each face<sup id="a1">[1](#f1)</sup>.
+
+Make sure you have installed opencv-python: 
 ```bash
 pip install opencv-python
 ```
@@ -26,13 +30,16 @@ pip install picamera
 ```
 
 To start the demo, run
-```console
+```bash
 source demo.sh
 ```
 
-## Emotion Recognition
-TensorFlow model for emotion recognition, using a face object detector to localize faces and runs a emotion classifier on each face<sup id="a1">[1](#f1)</sup>.
+### Mock User Interface
 
+Run the following launch script to start a mock user agent:
+```bash
+python3 launch.py
+```
 
 ## Citations
 <b id="f1">[1]</b> https://github.com/oarriaga/face_classification [↩](#a1)
