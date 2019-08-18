@@ -50,11 +50,11 @@ atexit.register(onStop)
 # loading models
 face_detection = load_detection_model(detection_model_path)
 emotion_classifier = load_model(emotion_model_path, compile=False)
-gender_classifier = load_model(gender_model_path, compile=False)
+#gender_classifier = load_model(gender_model_path, compile=False)
 
 # getting input model shapes for inference
 emotion_target_size = emotion_classifier.input_shape[1:3]
-gender_target_size = gender_classifier.input_shape[1:3]
+#gender_target_size = gender_classifier.input_shape[1:3]
 
 
 # Here is where we conduct the loop for taking pics and reconizing emotions
