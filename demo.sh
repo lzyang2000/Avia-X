@@ -1,3 +1,3 @@
 cd emotion_recognition/src
-python image_emotion_gender_demo.py
+python image_emotion_demo.py
 cd ../..
