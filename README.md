@@ -45,4 +45,8 @@ python3 launch.py
 <b id="f1">[1]</b> https://github.com/oarriaga/face_classification [↩](#a1)
 
 
-
+## GUI
+Run the following to install guizero
+```bash
+pip install guizero
+```
