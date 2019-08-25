@@ -3,3 +3,4 @@ test.py
 .mypy_cache/
 **/*.pyc
 .idea/
+venv/
