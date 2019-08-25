@@ -34,16 +34,29 @@ class Agent:
                 self.user = user_created
             else:
                 display_error_msg(error_msg)
+            self.user.on_board = False        
         else:
             matched_user_id = self.login_command(user_input, user_credentials)
             if matched_user_id:
                 self.user = User.login(self, matched_user_id)
             else:
                 print('User {} not found.'.format(user_input))
-                print()
                 self.wait_for_user_session()
         
         print('User {} login successful.'.format(self.user.info.username))
+
+        # if not hasattr(self.user, 'on_board') or not self.user.on_board:
+        if not self.user.on_board:
+            print("You haven't set your initial prefereces yet...")
+            self.complete_onboarding_process(self.user)
+            self.user.on_board = True
+            print("A???")
+        else:
+            print("HIIII")
+            # pass
+
+        self.user.on_board = True
+        self.wait_for_user_session()
 
     def complete_onboarding_process(self, user):
         updated_preference = {}
@@ -51,6 +64,8 @@ class Agent:
         updated_preference['global_theme'] = self.ask_and_expect_typed_response('Select your favorite cabinet theme. ', preset_global_themes.keys())
         updated_preference['personal_theme'] = self.ask_and_expect_typed_response('Select your favorite personal theme. ', preset_personal_themes.keys())
         user.set_preference(updated_preference)
+        print('Onboard successful')
+        # self.wait_for_user_session()
 
     # Loop for emotion detection and all other stuff should go here
     def run(self):

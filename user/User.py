@@ -4,6 +4,8 @@ from . import mock_database as database
 
 class User:
 
+    on_board = False
+
     class Info:
         username = 'Default User'
         birthday = 'Not Provided'
@@ -49,11 +51,13 @@ class User:
         return self.info.preference
 
     def set_preference(self, updated_preference):
+        print("Preferences set")
         for (theme, setting) in updated_preference.items():
             if not setting == self.info.preference[theme]:
                 self.info.preference[theme] = setting
                 self.log_history('set_preference', (theme, setting))
         database.save(self)
+        # print("Preferences set")
 
     # We could implement more sophisticated override setting in the future. We can only turn it off for now
     def manual_override(self, updating_reaction):
