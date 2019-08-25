@@ -1,6 +1,7 @@
 
 from user import *
 from theme import *
+from user import mock_database as database
 
 NEW_USER_COMMAND = 'NEW USER'
 SKIP_COMMAND = 'SKIP'
@@ -34,7 +35,6 @@ class Agent:
                 self.user = user_created
             else:
                 display_error_msg(error_msg)
-            self.user.on_board = False        
         else:
             matched_user_id = self.login_command(user_input, user_credentials)
             if matched_user_id:
@@ -42,20 +42,24 @@ class Agent:
             else:
                 print('User {} not found.'.format(user_input))
                 self.wait_for_user_session()
-        
+    
+            self.user.info.on_board = True
+            
         print('User {} login successful.'.format(self.user.info.username))
+        
 
-        # if not hasattr(self.user, 'on_board') or not self.user.on_board:
-        if not self.user.on_board:
+        # if not hasattr(self.user.info, 'on_board') or not self.user.info.on_board:
+        if not self.user.info.on_board:
             print("You haven't set your initial prefereces yet...")
             self.complete_onboarding_process(self.user)
-            self.user.on_board = True
+            self.user.info.on_board = True
+            database.save(self.user)
             print("A???")
         else:
             print("HIIII")
+            print("Waiting for further #TODO")
             # pass
 
-        self.user.on_board = True
         self.wait_for_user_session()
 
     def complete_onboarding_process(self, user):

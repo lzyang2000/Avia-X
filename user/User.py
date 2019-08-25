@@ -4,14 +4,12 @@ from . import mock_database as database
 
 class User:
 
-    on_board = False
-
     class Info:
         username = 'Default User'
         birthday = 'Not Provided'
         preference = { 'global_theme': None, 'personal_theme': None, 'disabled_default_reactions': {} }
         history = []
-
+        
         def __init__(self, info_dict={}):
             if 'username' in info_dict:
                 self.username = info_dict['username']
@@ -21,6 +19,7 @@ class User:
                 self.preference = info_dict['preference']
             if 'history' in info_dict:
                 self.history = info_dict['history']
+            self.on_board = False
         
         def __str__(self):
             return 'username: {}, birthday: {}, preference: {}, history: {}'.format(self.username, self.birthday, self.preference, self.history)
@@ -39,6 +38,7 @@ class User:
         user = User(agent, info)
         user.id = utils.random_id()
         agent.complete_onboarding_process(user)
+        user.info.on_board = True
         return (user, None)
 
     @staticmethod
@@ -56,7 +56,8 @@ class User:
             if not setting == self.info.preference[theme]:
                 self.info.preference[theme] = setting
                 self.log_history('set_preference', (theme, setting))
-        database.save(self)
+        # database.save(self)
+        self.info.on_board = True
         # print("Preferences set")
 
     # We could implement more sophisticated override setting in the future. We can only turn it off for now
