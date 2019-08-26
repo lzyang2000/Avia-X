@@ -47,8 +47,6 @@ def main():
     agent = Agent()
     # print(agent.user.info)
 
-    print("HasfdI")
-    
     session.new_agent_login(agent)
     session.run()
 
