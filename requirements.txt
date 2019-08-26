@@ -8,3 +8,4 @@ pandas
 scipy
 scikit-image
 tensorflow
+guizero
