@@ -1,9 +1,10 @@
 from guizero import *
+
 from emotion_recognition.src.image_emotion_demo import *
 import time
-import threading
-
-
+from mock_agent import Agent
+from user import *
+from theme import *
 
 def lumi_change(slider_value):
     textbox_lumi.value = "1e+"+slider_value
@@ -34,7 +35,6 @@ def change_color(ctype):
 warm_color = (243, 231, 211)
 bright_color = (255, 250, 229)
 
-
 app = App()
 
 # Define lumi input
@@ -53,5 +53,3 @@ output_bar = Text(app, text = "Getting Output...", align = "left")
 output_bar.repeat(5000, display_output)
 
 app.display()
-
-
