@@ -3,8 +3,10 @@ theme = 'Theme'
 
 quiet = 'Quiet Theme'
 engaged = 'Engaged Theme'
+romantic = 'Romantic Theme'
 cozy = 'Cozy'
 reading = 'Concentrated'
+sleep = 'Sleep'
 
 image = 'Image'
 light = 'Light'
