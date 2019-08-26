@@ -3,6 +3,7 @@ theme = 'Theme'
 
 quiet = 'Quiet Theme'
 engaged = 'Engaged Theme'
+romantic = 'Romantic Theme'
 cozy = 'Cozy'
 reading = 'Concentrated'
 
@@ -20,13 +21,15 @@ entertainment_pause = 'Entertainment Pause'
 
 # All paths could be handled more elegantly. More on this later
 preset_global_themes = {
-    quiet: { image: ['./quiet_theme/photos/1.png', './quite_theme/photos/2.png'], light: 70, music: './quite_theme/music_playlist' },
-    engaged: { image: ['./engaged_theme/photos/1.png', './engaged_theme/photos/2.png'], light: 70, music: './engaged_theme/music_playlist' },
+    quiet: { image: ['./quiet_theme/photos/q1.png', './quite_theme/photos/q2.png'], light: 20, music: './quite_theme/music_playlist' },
+    engaged: { image: ['./engaged_theme/photos/e1.png', './engaged_theme/photos/e2.png'], light: 70, music: './engaged_theme/music_playlist' },
+    romantic: {image: ['./romantic_theme/photos/r1.png', './romantic_theme/photos/r2.png'], light: 30, music: './romantic_theme/music_playlist' }
 }
 
 preset_personal_themes = {
     cozy: { seat_angle: 25, entertainment_recommendation: [], reading_light: 0 },
     reading: { seat_angle: 80, entertainment_recommendation: [], reading_light: 40 }
+    sleep: { seat_angle: 5, entertainment_recommendation: [], reading_light: 0 }
 }
 
 action = 'action'
