@@ -1,12 +1,14 @@
+import json
 import os
-import pickle
 
-file_path = os.path.dirname(os.path.abspath(__file__)) + '/user_database.p'
-data = pickle.load(open(file_path, 'rb'))
+file_path = os.path.dirname(os.path.abspath(__file__)) + '/user_database.json'
+with open(file_path, 'r') as fp:
+    data = json.load(fp)
 
 def save(user):
-    data[user.username] = { 'birthday': user.info.birthday, 'preference': user.info.preference, 'history': user.info.history}
-    pickle.dump(data, open(file_path, 'wb'))
+    data[user.username] = { 'birthday': user.info.birthday, 'preference': user.info.preference, 'history': user.info.history }
+    with open(file_path, 'w') as fp:
+        json.dump(data, fp)
 
 def find(username=None):
     if (username):
@@ -15,4 +17,5 @@ def find(username=None):
 
 def clear():
     data = {}
-    pickle.dump(data, open(file_path, 'wb'))
+    with open(file_path, 'w') as fp:
+        json.dump(data, fp)

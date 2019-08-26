@@ -49,7 +49,6 @@ class Rule:
     def trigger(state):
         return False
 
-
 class TurbulanceRuleGlobal(Rule):
 
     name = 'TurbulanceRuleGlobal'
