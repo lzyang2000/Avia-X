@@ -12,17 +12,6 @@ class User:
         history = []
         
         def __init__(self, info_dict={}):
-<<<<<<< HEAD
-            if 'username' in info_dict:
-                self.username = info_dict['username']
-            if 'birthday' in info_dict:
-                self.birthday = info_dict['birthday']
-            if 'preference' in info_dict:
-                self.preference = info_dict['preference']
-            if 'history' in info_dict:
-                self.history = info_dict['history']
-            self.on_board = False
-=======
             if username in info_dict:
                 self.username = info_dict[username]
             if birthday in info_dict:
@@ -31,16 +20,15 @@ class User:
                 self.preference = info_dict[preference]
             if history in info_dict:
                 self.history = info_dict[history]
->>>>>>> fbf0ee61db78fcdf23b844859d085b2136886b59
         
         def __str__(self):
             return 'username: {}, birthday: {}, preference: {}, history: {}'.format(self.username, self.birthday, self.preference, self.history)
 
-    def __init__(self, agent, info=Info(), id=''):
+    def __init__(self, agent, info=Info(), name=''):
         self.info = info
         self.agent = agent # AGENT should not be saved as a part of database; assigned to user for convenience
-        if id:
-            self.id = id
+        if name:
+            self.username = name
 
     @staticmethod
     def create_new_user(agent, info):
@@ -48,16 +36,15 @@ class User:
         if info.username in all_user_names:
             return (None, 'User with username {} already exists. Please try a different one.').format(info.name)
         user = User(agent, info)
-        user.id = utils.random_id()
         agent.complete_onboarding_process(user)
         user.info.on_board = True
         return (user, None)
 
     @staticmethod
-    def login(agent, id):
-        user_info = database.find(id)
+    def login(agent, name):
+        user_info = database.find(name)
         user_info_obj = User.Info(user_info)
-        return User(agent, user_info_obj, id)
+        return User(agent, user_info_obj, name)
 
     def get_preference(self):
         return self.info.preference
@@ -67,15 +54,8 @@ class User:
         for (theme, setting) in updated_preference.items():
             if not setting == self.info.preference[theme]:
                 self.info.preference[theme] = setting
-<<<<<<< HEAD
-                self.log_history('set_preference', (theme, setting))
-        # database.save(self)
-        self.info.on_board = True
-        # print("Preferences set")
-=======
                 self.log_history(set_preference, (theme, setting))
         database.save(self)
->>>>>>> fbf0ee61db78fcdf23b844859d085b2136886b59
 
     def accepts_rule(self, rule_name):
         return rule_name not in self.info.preference[disabled_default_reactions]

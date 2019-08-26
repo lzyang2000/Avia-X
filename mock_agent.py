@@ -1,11 +1,7 @@
 
 from user import *
 from theme import *
-<<<<<<< HEAD
-from user import mock_database as database
-=======
 import time
->>>>>>> fbf0ee61db78fcdf23b844859d085b2136886b59
 
 NEW_USER_COMMAND = 'NEW USER'
 SKIP_COMMAND = 'SKIP'
@@ -25,7 +21,7 @@ class Agent:
         current_user_data = database.find()
         user_credentials = []
         if current_user_data:
-            user_credentials = [(data['username'], user_id) for (user_id, data) in current_user_data.items()]
+            user_credentials = [data['username'] for (user_id, data) in current_user_data.items()]
             displayable_user_info = [data['username'] for data in current_user_data.values()] # Could do an image? Just username for now
             self.display_current_users(displayable_user_info)
 
@@ -39,29 +35,25 @@ class Agent:
             else:
                 display_error_msg(error_msg)
         else:
-            matched_user_id = self.login_command(user_input, user_credentials)
-            if matched_user_id:
-                self.user = User.login(self, matched_user_id)
+            matched_username = self.login_command(user_input, user_credentials)
+            if matched_username:
+                self.user = User.login(self, matched_username)
             else:
                 print('User {} not found.'.format(user_input))
                 self.wait_for_user_session()
-<<<<<<< HEAD
-=======
-
->>>>>>> fbf0ee61db78fcdf23b844859d085b2136886b59
         print('User {} login successful.'.format(self.user.info.username))
         
 
         # if not hasattr(self.user.info, 'on_board') or not self.user.info.on_board:
-        if not self.user.info.on_board:
-            print("You haven't set your initial prefereces yet...")
-            self.complete_onboarding_process(self.user)
-            self.user.info.on_board = True
-            database.save(self.user)
-            print("A???")
-        else:
-            print("HIIII")
-            print("Waiting for further #TODO")
+        # if not self.user.info.on_board:
+        #     print("You haven't set your initial prefereces yet...")
+        #     self.complete_onboarding_process(self.user)
+        #     self.user.info.on_board = True
+        #     database.save(self.user)
+        #     print("A???")
+        # else:
+        #     print("HIIII")
+        #     print("Waiting for further #TODO")
             # pass
 
         self.wait_for_user_session()
@@ -141,9 +133,9 @@ class Agent:
 
     # Just name for now
     def login_command(self, user_input, user_credentials):
-        for (username, user_id) in user_credentials:
+        for username in user_credentials:
             if username == user_input:
-                return user_id
+                return username
 
     def log_out(self):
         self.user = None

@@ -1,11 +1,6 @@
 
 from mock_agent import Agent
 from user import *
-<<<<<<< HEAD
-import os
-import execute
-# import ui
-=======
 from theme import *
 import time
 
@@ -45,21 +40,17 @@ class Session:
     # TODO: discuss how to override a global rule trigger
     def handle_global_triggers(self, triggers):
         pass
->>>>>>> fbf0ee61db78fcdf23b844859d085b2136886b59
 
 # We should look into running multiple agents at once using python subprocesses
 def main():
     session = Session()
     agent = Agent()
-<<<<<<< HEAD
     # print(agent.user.info)
 
     print("HasfdI")
     
-=======
     session.new_agent_login(agent)
     session.run()
->>>>>>> fbf0ee61db78fcdf23b844859d085b2136886b59
 
 if __name__ == '__main__':
     main()
