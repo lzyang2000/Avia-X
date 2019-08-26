@@ -39,7 +39,7 @@ class User:
     def login(agent, name):
         user_info = database.find(name)
         user_info_obj = User.Info(user_info)
-        return User(agent, user_info_obj, name)
+        return User(agent, name, user_info_obj)
 
     def get_preference(self):
         return self.info.preference
