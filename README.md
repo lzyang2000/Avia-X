@@ -19,11 +19,6 @@ pip install -r requirements.txt
 
 TensorFlow model for emotion recognition, using a face object detector to localize faces and runs a emotion classifier on each face<sup id="a1">[1](#f1)</sup>.
 
-Make sure you have installed opencv-python: 
-```bash
-pip install opencv-python
-```
-
 If you are running on a Raspberry Pi, install picamera:
 ```bash
 pip install picamera
