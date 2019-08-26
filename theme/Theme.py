@@ -30,7 +30,7 @@ preset_global_themes = {
 
 preset_personal_themes = {
     cozy: { seat_angle: 25, entertainment_recommendation: [], reading_light: 0 },
-    reading: { seat_angle: 80, entertainment_recommendation: [], reading_light: 40 }
+    reading: { seat_angle: 80, entertainment_recommendation: [], reading_light: 40 },
     sleep: { seat_angle: 5, entertainment_recommendation: [], reading_light: 0 }
 }
 
