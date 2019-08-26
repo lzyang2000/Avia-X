@@ -3,11 +3,13 @@ from emotion_recognition.src.image_emotion_demo import *
 import time
 import threading
 
+
+
 def lumi_change(slider_value):
     textbox_lumi.value = "1e+"+slider_value
     
-def pressure_change(slider_value):
-    textbox_pressure.value = slider_value
+def turbulence_change(slider_value):
+    textbox_turbulence.value = slider_value
 
 
 def display_output():
@@ -22,7 +24,7 @@ def display_output():
 		change_color("warm")
 	else:
 		change_color("bright") 
-		
+
 def change_color(ctype):
 	if ctype == "warm":
 		app.bg = warm_color
@@ -41,9 +43,9 @@ text_lumi = Text(app, text="Luminance", align="left")
 textbox_lumi = TextBox(app, align = "left")
 
 # Define pressure input
-pressure = Slider(app, command=pressure_change, horizontal = False, align = "left", start = 10, end = 90)
-text_pressure = Text(app, text="Pressure", align="left")
-textbox_pressure = TextBox(app, align = "left")
+turbulence = Slider(app, command=turbulence_change, horizontal = False, align = "left", start = 10, end = 90)
+text_turbulence = Text(app, text="Turbulence", align="left")
+textbox_turbulence = TextBox(app, align = "left")
 
 # Define picture capture
 output_button = PushButton(app, text="Predict", align = "left", command = display_output)

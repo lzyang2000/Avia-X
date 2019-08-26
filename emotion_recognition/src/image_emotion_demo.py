@@ -127,15 +127,14 @@ def main_predict():
             # draw_text(face_coordinates, rgb_image, gender_text, color, 0, -20, 1, 2)
             #     draw_text(face_coordinates, rgb_image,
             #               emotion_text, color, 0, -50, 1, 2)
-            try:
-                print("Prediction %d" % count + ":", emotion_text)
-            except UnboundLocalError:
-                end = time()
-                return None
+            print("Prediction:", emotion_text)
 
         end = time()
         print("Total predict time: %.fs," % (end - start), "sleeping for 5 seconds...")
-        return emotion_text
+        try:
+            return emotion_text
+        except:
+            return None
 
     # bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
     # cv2.imwrite('../images/predicted_test_image.png', bgr_image)
