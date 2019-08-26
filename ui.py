@@ -1,15 +1,38 @@
 from guizero import *
+from emotion_recognition.src.image_emotion_demo import *
+import time
+import threading
+
 def lumi_change(slider_value):
     textbox_lumi.value = "1e+"+slider_value
-    r_thresh = 243
-    g_thresh = 231
-    b_thresh = 211
-    if int(slider_value) > 7:
-    	app.bg = (243, 231, 211)
-    else:
-    	app.bg = (255, 250, 229)
+    
 def pressure_change(slider_value):
     textbox_pressure.value = slider_value
+
+
+def display_output():
+	# threading.Timer(5.0, display_output).start()
+	out_put = main_predict()
+	if out_put == None:
+		return
+	output_bar.value = out_put
+	if out_put in ["sad", "angry"]:
+		change_color("warm")
+	elif int(lumi.value) > 7:
+		change_color("warm")
+	else:
+		change_color("bright") 
+		
+def change_color(ctype):
+	if ctype == "warm":
+		app.bg = warm_color
+	elif ctype == "bright":
+		app.bg = bright_color
+
+warm_color = (243, 231, 211)
+bright_color = (255, 250, 229)
+
+
 app = App()
 
 # Define lumi input
@@ -22,10 +45,11 @@ pressure = Slider(app, command=pressure_change, horizontal = False, align = "lef
 text_pressure = Text(app, text="Pressure", align="left")
 textbox_pressure = TextBox(app, align = "left")
 
-# Define image input
-face1 = Picture(app, image="./pr.gif", align = "left", width = 80, height = 80)
-text_pic = Text(app, text="Input Pic", align="left")
-# Define calculation button
-button = PushButton(app, text="Output", align="left")
+# Define picture capture
+output_button = PushButton(app, text="Predict", align = "left", command = display_output)
+output_bar = Text(app, text = "Getting Output...", align = "left")
+output_bar.repeat(5000, display_output)
 
 app.display()
+
+
