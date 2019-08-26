@@ -22,11 +22,13 @@ entertainment_pause = 'Entertainment Pause'
 preset_global_themes = {
     quiet: { image: ['./quiet_theme/photos/1.png', './quite_theme/photos/2.png'], light: 70, music: './quite_theme/music_playlist' },
     engaged: { image: ['./engaged_theme/photos/1.png', './engaged_theme/photos/2.png'], light: 70, music: './engaged_theme/music_playlist' },
+    romantic: { image: ['./romantic_theme/photos/r1.png', './romantic_theme/photos/r2.png'], light: 30, music: './romantic_theme/music_playlist' },
 }
 
 preset_personal_themes = {
     cozy: { seat_angle: 25, entertainment_recommendation: [], reading_light: 0 },
-    reading: { seat_angle: 80, entertainment_recommendation: [], reading_light: 40 }
+    reading: { seat_angle: 80, entertainment_recommendation: [], reading_light: 40 },
+    sleep: { seat_angle: 5, entertainment_recommendation: [], reading_light: 0 },
 }
 
 action = 'action'
