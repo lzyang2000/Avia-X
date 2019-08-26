@@ -1,6 +1,7 @@
 
 from user import *
 from theme import *
+import time
 
 NEW_USER_COMMAND = 'NEW USER'
 SKIP_COMMAND = 'SKIP'
@@ -15,7 +16,6 @@ class Agent:
 
     def __init__(self):
         self.wait_for_user_session()
-        self.run()
 
     def wait_for_user_session(self):
         current_user_data = database.find()
@@ -42,7 +42,7 @@ class Agent:
                 print('User {} not found.'.format(user_input))
                 print()
                 self.wait_for_user_session()
-        
+
         print('User {} login successful.'.format(self.user.info.username))
 
     def complete_onboarding_process(self, user):
@@ -52,11 +52,42 @@ class Agent:
         updated_preference['personal_theme'] = self.ask_and_expect_typed_response('Select your favorite personal theme. ', preset_personal_themes.keys())
         user.set_preference(updated_preference)
 
-    # Loop for emotion detection and all other stuff should go here
-    def run(self):
-        # Could run other tests here
-        while True:
-            pass
+    # This is a "creative" solution. I know. But it's much simpler than many other solutions
+    def wait_for_override_input(self, text):
+        sleep_time = 8
+        print(text)
+        try:
+            for t in range(sleep_time, 0, -1):
+                print('Please press Ctrl-C in {} seconds to override this change.'.format(t))
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print('Change overrided')
+            return True
+
+    def handle_automatic_adjustments(self, trigger_results, state):
+        effective_results = {}
+        for rule_name in trigger_results:
+            if self.user.accepts_rule(rule_name):
+                effective_results[rule_name] = trigger_results[rule_name]
+            else:
+                print('{} has disabled rule {}'.format(self.user.info.username, rule_name))
+
+        overrided_rules = []
+
+        # The console agent can only handle overrides sequentially
+        for rule_name in effective_results:
+            rule = name_to_rule[rule_name]
+            if rule.overridable:
+                overrided = self.wait_for_override_input(rule.override_text)
+                if overrided:
+                    context_info = ', '.join(['{}={}'.format(param, value) for param, value in state.items() if param in rule.override_relevant_fields])
+                    self.user.manual_override((rule_name, context_info))
+                    overrided_rules.append(rule_name)
+
+        for rule_name in overrided_rules:
+            del effective_results[rule_name]
+
+        print(effective_results)
 
     def display_current_users(self, displayed_user_info):
         print('Current Users:')

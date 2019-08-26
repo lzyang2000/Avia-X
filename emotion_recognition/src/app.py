@@ -1,13 +1,14 @@
 import sys
 from time import time, sleep
+from datetime import datetime
 import atexit
 
 
 import cv2
 from keras.models import load_model
 import numpy as np
-# import picamera
-# import picamera.array
+import picamera
+import picamera.array
 
 from utils.datasets import get_labels
 from utils.inference import detect_faces
@@ -17,6 +18,8 @@ from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.inference import load_image
 from utils.preprocessor import preprocess_input
+
+from guizero import App, PushButton
 
 # parameters for loading data and images
 #image_path = sys.argv[1]
@@ -33,43 +36,36 @@ gender_offsets = (10, 10)
 emotion_offsets = (20, 40)
 emotion_offsets = (0, 0)
 
-#init cam
-camera = picamera.PiCamera()
-#camera.resolution = (1024, 768)
+# init cam
+camera = picamera.PiCamera(sensor_mode=4)
+camera.resolution = (1280, 720)
 camera.rotation = 180
-camera.start_preview()
 
-#handle exit
-def onStop():
-    camera.stop_preview()
-    print ("Shutdown")
-    sys.exit()
-atexit.register(onStop)
-        
 
 # loading models
 face_detection = load_detection_model(detection_model_path)
 emotion_classifier = load_model(emotion_model_path, compile=False)
-gender_classifier = load_model(gender_model_path, compile=False)
+#gender_classifier = load_model(gender_model_path, compile=False)
 
 # getting input model shapes for inference
 emotion_target_size = emotion_classifier.input_shape[1:3]
-gender_target_size = gender_classifier.input_shape[1:3]
+#gender_target_size = gender_classifier.input_shape[1:3]
 
 
 # Here is where we conduct the loop for taking pics and reconizing emotions
-while(1):
+def emotion_rec():
     print("New iter")
-    start = time()
+    start = datetime.now()
     # take image
     with picamera.array.PiRGBArray(camera) as stream:
-            camera.capture(stream, format='rgb')
-            # At this point the image is available as stream.array
-            image = stream.array
+        camera.capture(stream, format='rgb')
+        # At this point the image is available as stream.array
+        image = stream.array
 
     # loading images
-    rgb_image = image #load_image(image_path, grayscale=False)
-    gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)#load_image(image_path, grayscale=True)
+    rgb_image = image  # load_image(image_path, grayscale=False)
+    # load_image(image_path, grayscale=True)
+    gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
 
     gray_image = np.squeeze(gray_image)
     gray_image = gray_image.astype('uint8')
@@ -98,7 +94,9 @@ while(1):
         gray_face = preprocess_input(gray_face, True)
         gray_face = np.expand_dims(gray_face, 0)
         gray_face = np.expand_dims(gray_face, -1)
-        emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
+        prediction=emotion_classifier.predict(gray_face)
+        emotion_label_arg=np.argmax(prediction)
+        #emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
         emotion_text = emotion_labels[emotion_label_arg]
 
     #    if gender_text == gender_labels[0]:
@@ -110,14 +108,42 @@ while(1):
         #draw_text(face_coordinates, rgb_image, gender_text, color, 0, -20, 1, 2)
    #     draw_text(face_coordinates, rgb_image,
    #               emotion_text, color, 0, -50, 1, 2)
-        print("Prediction %d" % i +":",emotion_text)
-        i+=1
-        
-    end = time()
-    print("Total predict time: %ds," % (end-start), "sleeping for 5 seconds...")
-    sleep(5)
+        print("Prediction %d" % i + ":", emotion_text)
+        i += 1
+
+    end = datetime.now()
+    delta = end-start
+    print("Total predict time: %dms," % int(delta.total_seconds() * 1000))
+
+# handle exit
 
 
+def onStop():
+    camera.close()
+    print("Shutdown")
+    sys.exit()
+
+
+atexit.register(onStop)
+
+
+def run():
+    camera.start_preview(alpha=0)
+    sleep(2)
+    emotion_rec()
+    camera.stop_preview()
+
+
+def main():
+    app = App("Demo")
+    start_rec = PushButton(app, command=run(), text="Start Emotion Rec")
+    app.display()
+    # while(1):
+    #     emotion_rec()
+
+
+if __name__ == "__main__":
+    main()
 
 #bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
 #cv2.imwrite('../images/predicted_test_image.png', bgr_image)
