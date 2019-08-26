@@ -24,11 +24,11 @@ class User:
         def __str__(self):
             return 'username: {}, birthday: {}, preference: {}, history: {}'.format(self.username, self.birthday, self.preference, self.history)
 
-    def __init__(self, agent, info=Info(), id=''):
+    def __init__(self, agent, info=Info(), name=''):
         self.info = info
         self.agent = agent # AGENT should not be saved as a part of database; assigned to user for convenience
-        if id:
-            self.id = id
+        if name:
+            self.username = name
 
     @staticmethod
     def create_new_user(agent, info):
@@ -36,15 +36,14 @@ class User:
         if info.username in all_user_names:
             return (None, 'User with username {} already exists. Please try a different one.').format(info.name)
         user = User(agent, info)
-        user.id = utils.random_id()
         agent.complete_onboarding_process(user)
         return (user, None)
 
     @staticmethod
-    def login(agent, id):
-        user_info = database.find(id)
+    def login(agent, name):
+        user_info = database.find(name)
         user_info_obj = User.Info(user_info)
-        return User(agent, user_info_obj, id)
+        return User(agent, user_info_obj, name)
 
     def get_preference(self):
         return self.info.preference
