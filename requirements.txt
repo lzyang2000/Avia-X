@@ -9,3 +9,4 @@ scipy
 scikit-image
 tensorflow
 guizero
+opencv-python
