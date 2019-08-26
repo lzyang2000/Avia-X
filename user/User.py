@@ -1,19 +1,15 @@
 import datetime
-from . import utils
 from .constants import *
 from . import mock_database as database
 
 class User:
 
     class Info:
-        username = 'Default User'
         birthday = 'Not Provided'
         preference = { global_theme: None, personal_theme: None, disabled_default_reactions: {} }
         history = []
 
         def __init__(self, info_dict={}):
-            if username in info_dict:
-                self.username = info_dict[username]
             if birthday in info_dict:
                 self.birthday = info_dict[birthday]
             if preference in info_dict:
@@ -22,20 +18,19 @@ class User:
                 self.history = info_dict[history]
         
         def __str__(self):
-            return 'username: {}, birthday: {}, preference: {}, history: {}'.format(self.username, self.birthday, self.preference, self.history)
+            return 'birthday: {}, preference: {}, history: {}'.format(self.birthday, self.preference, self.history)
 
-    def __init__(self, agent, info=Info(), name=''):
+    def __init__(self, agent, name, info=Info()):
+        self.username = name
         self.info = info
         self.agent = agent # AGENT should not be saved as a part of database; assigned to user for convenience
-        if name:
-            self.username = name
 
     @staticmethod
-    def create_new_user(agent, info):
+    def create_new_user(agent, username, info):
         all_user_names = database.find().keys()
-        if info.username in all_user_names:
+        if username in all_user_names:
             return (None, 'User with username {} already exists. Please try a different one.').format(info.name)
-        user = User(agent, info)
+        user = User(agent, username, info)
         agent.complete_onboarding_process(user)
         return (user, None)
 
