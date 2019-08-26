@@ -5,12 +5,12 @@ file_path = os.path.dirname(os.path.abspath(__file__)) + '/user_database.p'
 data = pickle.load(open(file_path, 'rb'))
 
 def save(user):
-    data[user.info.username] = { 'username': user.info.username, 'birthday': user.info.birthday, 'preference': user.info.preference, 'history': user.info.history}
+    data[user.username] = { 'birthday': user.info.birthday, 'preference': user.info.preference, 'history': user.info.history}
     pickle.dump(data, open(file_path, 'wb'))
 
-def find(user_id=None):
-    if (user_id):
-        return data[user_id]
+def find(username=None):
+    if (username):
+        return data[username]
     return data
 
 def clear():
