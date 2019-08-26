@@ -1,19 +1,15 @@
 import datetime
-from . import utils
 from .constants import *
 from . import mock_database as database
 
 class User:
 
     class Info:
-        username = 'Default User'
         birthday = 'Not Provided'
         preference = { global_theme: None, personal_theme: None, disabled_default_reactions: {} }
         history = []
 
         def __init__(self, info_dict={}):
-            if username in info_dict:
-                self.username = info_dict[username]
             if birthday in info_dict:
                 self.birthday = info_dict[birthday]
             if preference in info_dict:
@@ -22,29 +18,27 @@ class User:
                 self.history = info_dict[history]
         
         def __str__(self):
-            return 'username: {}, birthday: {}, preference: {}, history: {}'.format(self.username, self.birthday, self.preference, self.history)
+            return 'birthday: {}, preference: {}, history: {}'.format(self.birthday, self.preference, self.history)
 
-    def __init__(self, agent, info=Info(), id=''):
+    def __init__(self, agent, name, info=Info()):
+        self.username = name
         self.info = info
         self.agent = agent # AGENT should not be saved as a part of database; assigned to user for convenience
-        if id:
-            self.id = id
 
     @staticmethod
-    def create_new_user(agent, info):
+    def create_new_user(agent, username, info):
         all_user_names = database.find().keys()
-        if info.username in all_user_names:
+        if username in all_user_names:
             return (None, 'User with username {} already exists. Please try a different one.').format(info.name)
-        user = User(agent, info)
-        user.id = utils.random_id()
+        user = User(agent, username, info)
         agent.complete_onboarding_process(user)
         return (user, None)
 
     @staticmethod
-    def login(agent, id):
-        user_info = database.find(id)
+    def login(agent, name):
+        user_info = database.find(name)
         user_info_obj = User.Info(user_info)
-        return User(agent, user_info_obj, id)
+        return User(agent, user_info_obj, name)
 
     def get_preference(self):
         return self.info.preference

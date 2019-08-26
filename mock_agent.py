@@ -19,31 +19,30 @@ class Agent:
 
     def wait_for_user_session(self):
         current_user_data = database.find()
-        user_credentials = []
+        existing_users = []
         if current_user_data:
-            user_credentials = [(data['username'], user_id) for (user_id, data) in current_user_data.items()]
-            displayable_user_info = [data['username'] for data in current_user_data.values()] # Could do an image? Just username for now
-            self.display_current_users(displayable_user_info)
+            existing_users = [username for (username, data) in current_user_data.items()]
+            self.display_current_users(existing_users)
 
         user_input = self.ask_and_expect_typed_response("Please type your username to log in. Type '{}' to create a new user.".format(NEW_USER_COMMAND))
 
         if user_input.upper() == NEW_USER_COMMAND:
-            user_info = self.capture_new_user_info()
-            user_created, error_msg = User.create_new_user(self, user_info)
+            username, user_info = self.capture_new_user_info()
+            user_created, error_msg = User.create_new_user(self, username, user_info)
             if user_created:
                 self.user = user_created
             else:
                 display_error_msg(error_msg)
         else:
-            matched_user_id = self.login_command(user_input, user_credentials)
-            if matched_user_id:
-                self.user = User.login(self, matched_user_id)
+            matched_username = self.login_command(user_input, existing_users)
+            if matched_username:
+                self.user = User.login(self, matched_username)
             else:
                 print('User {} not found.'.format(user_input))
                 print()
                 self.wait_for_user_session()
 
-        print('User {} login successful.'.format(self.user.info.username))
+        print('User {} login successful.'.format(self.user.username))
 
     def complete_onboarding_process(self, user):
         updated_preference = {}
@@ -70,7 +69,7 @@ class Agent:
             if self.user.accepts_rule(rule_name):
                 effective_results[rule_name] = trigger_results[rule_name]
             else:
-                print('{} has disabled rule {}'.format(self.user.info.username, rule_name))
+                print('{} has disabled rule {}'.format(self.user.username, rule_name))
 
         overrided_rules = []
 
@@ -108,19 +107,19 @@ class Agent:
         return input()
 
     def capture_new_user_info(self):
-        username = self.ask_and_expect_typed_response("Please type your username.")
+        _username = self.ask_and_expect_typed_response("Please type your username.")
         # UI should use smarter birthday input, so we don't waste time on implementing birthday check here
-        birthday = self.ask_and_expect_typed_response("Please type your birthday.")
-        return User.Info({ 'username': username, 'birthday': birthday })
+        _birthday = self.ask_and_expect_typed_response("Please type your birthday.")
+        return _username, User.Info({ birthday: _birthday })
 
     def display_error_msg(self, msg):
         print(msg)
 
     # Just name for now
-    def login_command(self, user_input, user_credentials):
-        for (username, user_id) in user_credentials:
+    def login_command(self, user_input, existing_users):
+        for username in existing_users:
             if username == user_input:
-                return user_id
+                return username
 
     def log_out(self):
         self.user = None
