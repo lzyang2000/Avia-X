@@ -9,9 +9,13 @@ from theme import *
 def lumi_change(slider_value):
     textbox_lumi.value = "1e+"+slider_value
     
+<<<<<<< HEAD
 def turbulence_change(slider_value):
     textbox_turbulence.value = slider_value
-
+=======
+def pressure_change(slider_value):
+    textbox_pressure.value = slider_value
+>>>>>>> c3fe337... support Session with guizero
 
 def display_output():
 	# threading.Timer(5.0, display_output).start()

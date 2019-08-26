@@ -1,3 +1,4 @@
+from .Theme import *
 
 theme = 'Theme'
 
@@ -7,6 +8,7 @@ romantic = 'Romantic Theme'
 cozy = 'Cozy'
 reading = 'Concentrated'
 sleep = 'Sleep'
+normal = "Normal Theme"
 
 image = 'Image'
 light = 'Light'
@@ -15,7 +17,14 @@ seat_angle = 'Seat Angle'
 reading_light = 'Reading Light'
 entertainment_recommendation = 'Entertainment Recommendation'
 
-turbulance = 'Turbulance'
+turbulence = 'Turbulence'
 ambiant_light = 'Ambiant Light'
 safety_belt_warning = 'Safety Belt Warning'
 entertainment_pause = 'Entertainment Pause'
+luminence = "Luminence"
+emotion = "Emotion"
+
+action = 'action'
+policy = 'policy'
+context = 'context'
+
