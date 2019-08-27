@@ -9,16 +9,19 @@ class GlobalTheme(Theme):
     music = None
 
 class Quiet(GlobalTheme):
+    name = quiet
     image = ['./quiet_theme/photos/1.png', './quite_theme/photos/2.png']
     light = 70
     music = './quite_theme/music_playlist'
 
 class Engaged(GlobalTheme):
+    name = engaged
     image = ['./engaged_theme/photos/1.png', './engaged_theme/photos/2.png']
     light = 70
     music = './engaged_theme/music_playlist'
 
 class Romantic(GlobalTheme):
+    name = romantic
     image = ['./romantic_theme/photos/r1.png', './romantic_theme/photos/r2.png']
     light = 30
     music = './romantic_theme/music_playlist'
@@ -29,14 +32,17 @@ class PersonalTheme(Theme):
     reading_light = None
 
 class Cozy(PersonalTheme):
+    name = cozy
     seat_angle = 25
     reading_light = 0
 
 class Reading(PersonalTheme):
+    name = reading
     seat_angle = 80
     reading_light = 40
 
 class Sleep(PersonalTheme):
+    name = sleep
     seat_angle = 5
     reading_light = 0
 
