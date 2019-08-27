@@ -96,14 +96,13 @@ class GUISession(Session):
         print(triggers)
         belt_warning = triggers["TurbulenceRuleGlobal"]["Safety Belt Warning"]
         theme_name = triggers["TurbulenceRuleGlobal"]["Theme"]
-        emotion = triggers["TurbulenceRuleGlobal"]["Emotion"]
-        light = triggers["TurbulenceRuleGlobal"]["Light"]
 
         if theme_name:
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.change_color(updated_theme.light)
+            self.state[theme] = updated_theme.name
 
-        if belt_warning or emotion in ["sad", "angry", "fear"] or light == "warm":
+        if belt_warning:
             self.trigger_box.value = "Please Fasten your Belt"
 
         # if theme == "quiet":

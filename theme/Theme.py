@@ -28,10 +28,16 @@ class CustomizedGlobalTheme(CustomizedTheme, GlobalTheme):
         self.music = theme_dict[music]
         self.name = name
 
+class Warm(GlobalTheme):
+    name = warm
+    image = None
+    light = (255, 231, 211)
+    music = './warm_theme/music_playlist'
+
 class Quiet(GlobalTheme):
     name = quiet
     image = ['./quiet_theme/photos/1.png', './quite_theme/photos/2.png']
-    light = (30, 62, 120)
+    light = (99, 200, 242)
     music = './quite_theme/music_playlist'
 
 class Engaged(GlobalTheme):
@@ -77,8 +83,7 @@ class Sleep(PersonalTheme):
     seat_angle = 5
     reading_light = 0
 
-
-global_themes = [GlobalTheme, Quiet, Engaged, Romantic]
+global_themes = [GlobalTheme, Quiet, Engaged, Romantic, Warm]
 name_to_global_theme = { theme.name: theme for theme in global_themes }
 
 personal_themes = [Cozy, Reading, Sleep]

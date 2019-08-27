@@ -20,18 +20,18 @@ class TurbulenceRuleGlobal(Rule):
     safety_belt_response = { safety_belt_warning: True }
     quiet_theme_threshold = 80
     quiet_theme_response = { theme: quiet }
-
+    warm_theme_response = {theme:warm}
 
     def trigger(state):
-        return_dic = {safety_belt_warning: False, theme: normal, light:"bright",emotion:"neutral"}
+        return_dic = {safety_belt_warning: False, theme: normal}
         if state[turbulence] > 60:
             return_dic.update(TurbulenceRuleGlobal.safety_belt_response)
         if state[luminence] > 7:
-            return_dic.update(TurbulenceRuleGlobal.light_response)
+            return_dic.update(TurbulenceRuleGlobal.warm_theme_response)
         if state[turbulence] > 80:
             return_dic.update(TurbulenceRuleGlobal.quiet_theme_response)
         if state[emotion] in ["sad", "angry", "fear"]:
-            return_dic.update({emotion:state[emotion]})
+            return_dic.update(TurbulenceRuleGlobal.warm_theme_response)
         return return_dic
 
 
