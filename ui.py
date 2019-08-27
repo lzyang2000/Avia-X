@@ -1,14 +1,21 @@
 from guizero import *
+
 from emotion_recognition.src.image_emotion_demo import *
 import time
-import threading
+from mock_agent import Agent
+from user import *
+from theme import *
 
 def lumi_change(slider_value):
     textbox_lumi.value = "1e+"+slider_value
     
+<<<<<<< HEAD
+def turbulence_change(slider_value):
+    textbox_turbulence.value = slider_value
+=======
 def pressure_change(slider_value):
     textbox_pressure.value = slider_value
-
+>>>>>>> c3fe337... support Session with guizero
 
 def display_output():
 	# threading.Timer(5.0, display_output).start()
@@ -22,7 +29,7 @@ def display_output():
 		change_color("warm")
 	else:
 		change_color("bright") 
-		
+
 def change_color(ctype):
 	if ctype == "warm":
 		app.bg = warm_color
@@ -32,7 +39,6 @@ def change_color(ctype):
 warm_color = (243, 231, 211)
 bright_color = (255, 250, 229)
 
-
 app = App()
 
 # Define lumi input
@@ -41,9 +47,9 @@ text_lumi = Text(app, text="Luminance", align="left")
 textbox_lumi = TextBox(app, align = "left")
 
 # Define pressure input
-pressure = Slider(app, command=pressure_change, horizontal = False, align = "left", start = 10, end = 90)
-text_pressure = Text(app, text="Pressure", align="left")
-textbox_pressure = TextBox(app, align = "left")
+turbulence = Slider(app, command=turbulence_change, horizontal = False, align = "left", start = 10, end = 90)
+text_turbulence = Text(app, text="Turbulence", align="left")
+textbox_turbulence = TextBox(app, align = "left")
 
 # Define picture capture
 output_button = PushButton(app, text="Predict", align = "left", command = display_output)
@@ -51,5 +57,3 @@ output_bar = Text(app, text = "Getting Output...", align = "left")
 output_bar.repeat(5000, display_output)
 
 app.display()
-
-

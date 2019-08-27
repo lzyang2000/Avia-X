@@ -18,7 +18,7 @@ class Agent:
         self.wait_for_user_session()
 
     def wait_for_user_session(self):
-        current_user_data = database.find()
+        current_user_data = user_database.find()
         existing_users = []
         if current_user_data:
             existing_users = [username for (username, data) in current_user_data.items()]
@@ -47,8 +47,8 @@ class Agent:
     def complete_onboarding_process(self, user):
         updated_preference = {}
         # These should have graphic display in the UI, so optimization on type recognition is not necessary
-        updated_preference['global_theme'] = self.ask_and_expect_typed_response('Select your favorite cabinet theme. ', preset_global_themes.keys())
-        updated_preference['personal_theme'] = self.ask_and_expect_typed_response('Select your favorite personal theme. ', preset_personal_themes.keys())
+        updated_preference['global_theme'] = self.ask_and_expect_typed_response('Select your favorite cabinet theme. ', name_to_global_theme.keys())
+        updated_preference['personal_theme'] = self.ask_and_expect_typed_response('Select your favorite personal theme. ', name_to_personal_theme.keys())
         user.set_preference(updated_preference)
 
     # This is a "creative" solution. I know. But it's much simpler than many other solutions
@@ -88,6 +88,19 @@ class Agent:
 
         print(effective_results)
 
+    def customize_theme(self, theme, change):
+        new_theme_dic = dict(theme.to_dict())
+        new_theme_dic.update(change)
+        customized_theme = CustomizedTheme.create(new_theme_dic, theme.name)
+        theme_database.save(self.user, customized_theme)
+
+    # theme retrieval is done by agent because theme is user specific
+    def retrieve_theme(self, theme_name):
+        customized_theme_dict = theme_database.find(self.user, theme_name)
+        if customized_theme_dict:
+            return CustomizedTheme.create(customized_theme_dict, theme_name)
+        return name_to_theme[theme_name]()
+
     def display_current_users(self, displayed_user_info):
         print('Current Users:')
         for username in displayed_user_info:
@@ -123,5 +136,5 @@ class Agent:
 
     def log_out(self):
         self.user = None
-        current_user_data = database.find()
+        current_user_data = user_database.find()
         self.wait_for_user_session(current_user_data)
