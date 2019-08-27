@@ -12,8 +12,9 @@ class CustomizedTheme(Theme):
         return CustomizedPersonalTheme(theme_dict, name)
 
 class GlobalTheme(Theme):
+    name = normal
     image = None
-    light = None
+    light = (255, 250, 229)
     music = None
 
     def to_dict(self):
@@ -27,10 +28,16 @@ class CustomizedGlobalTheme(CustomizedTheme, GlobalTheme):
         self.music = theme_dict[music]
         self.name = name
 
+class Warm(GlobalTheme):
+    name = warm
+    image = None
+    light = (255, 231, 211)
+    music = './warm_theme/music_playlist'
+
 class Quiet(GlobalTheme):
     name = quiet
     image = ['./quiet_theme/photos/1.png', './quite_theme/photos/2.png']
-    light = 70
+    light = (99, 200, 242)
     music = './quite_theme/music_playlist'
 
 class Engaged(GlobalTheme):
@@ -42,7 +49,7 @@ class Engaged(GlobalTheme):
 class Romantic(GlobalTheme):
     name = romantic
     image = ['./romantic_theme/photos/r1.png', './romantic_theme/photos/r2.png']
-    light = 30
+    light = (216, 141, 188)
     music = './romantic_theme/music_playlist'
 
 class PersonalTheme(Theme):
@@ -55,7 +62,7 @@ class PersonalTheme(Theme):
 
 class CustomizedPersonalTheme(CustomizedTheme, PersonalTheme):
 
-    def __init__(self, dict):
+    def __init__(self, dict, name):
         self.seat_angle = dict[seat_angle]
         self.entertainment_recommendation = dict[entertainment_recommendation]
         self.reading_light = dict[reading_light]
@@ -76,8 +83,7 @@ class Sleep(PersonalTheme):
     seat_angle = 5
     reading_light = 0
 
-
-global_themes = [Quiet, Engaged, Romantic]
+global_themes = [GlobalTheme, Quiet, Engaged, Romantic, Warm]
 name_to_global_theme = { theme.name: theme for theme in global_themes }
 
 personal_themes = [Cozy, Reading, Sleep]

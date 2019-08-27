@@ -28,7 +28,6 @@ if not camera.isOpened():
     raise Exception("Could not open video device")
 
 def main_predict():
-
     # gender_labels = get_labels('imdb')
     font = cv2.FONT_HERSHEY_SIMPLEX
 
