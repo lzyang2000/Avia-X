@@ -81,9 +81,9 @@ class GUISession(Session):
 
         color_dict = { 'red': (243,115,54), 'yellow': (247,204,59) }
 
-        self.text_customize_light = Text(self.app, text="Customize Light for this theme", align="bottom", width = "fill")
+        
         self.customize_light_menu = Combo(self.app, command=customize_light, options=color_dict.keys(), align="bottom",width="fill")
-
+        self.text_customize_light = Text(self.app, text="Customize Light for this theme", align="bottom", width = "fill")
         # Define picture capture
         self.output_bar = Text(self.app, text = "Getting Output...", align = "left")
 
@@ -100,6 +100,7 @@ class GUISession(Session):
         if theme_name:
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.change_color(updated_theme.light)
+            self.trigger_box.value = "Theme:" + updated_theme.name
             self.state[theme] = updated_theme.name
 
         if belt_warning:
@@ -121,7 +122,7 @@ class GUISession(Session):
             self.state[emotion] = out_put
             self.handle_state(self.state)
 
-        self.output_bar.repeat(5000, respond_to_state)
+        self.output_bar.repeat(1000, respond_to_state)
         self.app.display()
 
     def gather_state(self):
