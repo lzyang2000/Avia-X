@@ -23,6 +23,15 @@ emotion_model_path = './emotion_recognition/trained_models/emotion_models/fer201
 emotion_labels = get_labels('fer2013')
 # parameters for loading data and images
 # image_path = sys.argv[1]
+# loading models
+face_detection = load_detection_model(detection_model_path)
+emotion_classifier = load_model(emotion_model_path, compile=False)
+# gender_classifier = load_model(gender_model_path, compile=False)
+
+# getting input model shapes for inference
+emotion_target_size = emotion_classifier.input_shape[1:3]
+# gender_target_size = gender_classifier.input_shape[1:3]
+
 camera = cv2.VideoCapture(0)
 if not camera.isOpened():
     raise Exception("Could not open video device")
@@ -53,14 +62,6 @@ def main_predict():
 
     atexit.register(onStop)
 
-    # loading models
-    face_detection = load_detection_model(detection_model_path)
-    emotion_classifier = load_model(emotion_model_path, compile=False)
-    # gender_classifier = load_model(gender_model_path, compile=False)
-
-    # getting input model shapes for inference
-    emotion_target_size = emotion_classifier.input_shape[1:3]
-    # gender_target_size = gender_classifier.input_shape[1:3]
 
 
     # Here is where we conduct the loop for taking pics and reconizing emotions
@@ -80,7 +81,7 @@ def main_predict():
         #     # At this point the image is available as stream.array
         #     image = stream.array
         ret, frame = camera.read()
-        #cv2.imshow("origin", frame)
+        cv2.imshow("origin", frame)
         image = frame[:, :, ::-1]  # BGR -> RGB
 
         # loading images
