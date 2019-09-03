@@ -51,6 +51,7 @@ class Agent:
         updated_preference['personal_theme'] = self.ask_and_expect_typed_response('Select your favorite personal theme. ', name_to_personal_theme.keys())
         user.set_preference(updated_preference)
 
+    # TODO: settle on a way to implement delayed override
     # This is a "creative" solution. I know. But it's much simpler than many other solutions
     def wait_for_override_input(self, text):
         sleep_time = 8
@@ -91,15 +92,22 @@ class Agent:
     def customize_theme(self, theme, change):
         new_theme_dic = dict(theme.to_dict())
         new_theme_dic.update(change)
-        customized_theme = CustomizedTheme.create(new_theme_dic, theme.name)
-        theme_database.save(self.user, customized_theme)
+        original_theme_dic = name_to_theme[theme.name]().to_dict()
+        if new_theme_dic == original_theme_dic:
+            self.reset_theme(theme.name)
+        else:
+            customized_theme = CustomizedTheme.create(new_theme_dic, theme.name)
+            theme_database.save(self.user.username, customized_theme)
 
     # theme retrieval is done by agent because theme is user specific
     def retrieve_theme(self, theme_name):
-        customized_theme_dict = theme_database.find(self.user, theme_name)
+        customized_theme_dict = theme_database.find(self.user.username, theme_name)
         if customized_theme_dict:
             return CustomizedTheme.create(customized_theme_dict, theme_name)
         return name_to_theme[theme_name]()
+
+    def reset_theme(self, theme_name):
+        theme_database.remove(self.user.username, theme_name)
 
     def display_current_users(self, displayed_user_info):
         print('Current Users:')
