@@ -43,7 +43,7 @@ class Quiet(GlobalTheme):
 class Engaged(GlobalTheme):
     name = engaged
     image = ['./engaged_theme/photos/1.png', './engaged_theme/photos/2.png']
-    light = 70
+    light = (70, 70, 255)
     music = './engaged_theme/music_playlist'
 
 class Romantic(GlobalTheme):
