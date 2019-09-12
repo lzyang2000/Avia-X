@@ -3,7 +3,10 @@ from mock_agent import Agent
 from user import *
 from theme import *
 from guizero import *
+# from playsound import playsound
+import pygame
 import time
+import os
 
 RESET = "reset"
 
@@ -53,6 +56,7 @@ class GUISession(Session):
     def __init__(self):
         super().__init__()
         self.app = App()
+        pygame.mixer.init()
 
         def turbulence_capture(slider_value):
             slider_value = int(slider_value)
@@ -100,21 +104,39 @@ class GUISession(Session):
 
     def handle_global_triggers(self, triggers):
         print(triggers)
-        belt_warning = triggers["TurbulenceRuleGlobal"]["Safety Belt Warning"]
-        theme_name = triggers["TurbulenceRuleGlobal"]["Theme"]
+
+        if not triggers:
+            return
+
+        all_updates = {}
+        for val in triggers.values():
+            all_updates.update(val)
 
         # anything that uses #self.agents[0] should consider multiple agents
-        if theme_name:
+        if theme in all_updates:
+            theme_name = all_updates[theme]
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.change_color(updated_theme.light)
+            self.play_album(updated_theme.music)
             self.trigger_box.value = "Theme:" + updated_theme.name
             self.state[theme] = updated_theme.name
 
-        if belt_warning:
+        if safety_belt_warning in all_updates:
             self.trigger_box.value = "Please Fasten your Belt"
 
     def change_color(self,color):
-            self.app.bg = color
+        self.app.bg = color
+
+    def play_album(self, path):
+        if not path:
+            return
+        path_to_album = './theme/assets/' + path
+        music_files = os.listdir(path_to_album)
+        if music_files:
+            music_file = path_to_album + '/' + music_files[0]
+            pygame.mixer.music.load(music_file)
+            pygame.mixer.music.play()
+            # playsound(path_to_album + '/' + music_files[0], False)
 
     def run(self):
 

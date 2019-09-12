@@ -10,3 +10,4 @@ scikit-image
 tensorflow
 guizero
 opencv-python
+playsound
