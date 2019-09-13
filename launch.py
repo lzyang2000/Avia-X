@@ -3,8 +3,12 @@ from mock_agent import Agent
 from user import *
 from theme import *
 from guizero import *
+# from playsound import playsound
+import pygame
 import time
+import os
 
+RESET = "reset"
 
 class Session:
 
@@ -22,7 +26,7 @@ class Session:
 
     # Get emotion and bar input from GUI
     def gather_state(self):
-        return { turbulence: 85, luminence: 3, emotion:"neutral"}
+        return { turbulence: 85, luminence: 3, emotion:"neutral" }
 
     def handle_state(self, state):
         global_triggers = {}
@@ -52,6 +56,7 @@ class GUISession(Session):
     def __init__(self):
         super().__init__()
         self.app = App()
+        pygame.mixer.init()
 
         def turbulence_capture(slider_value):
             slider_value = int(slider_value)
@@ -65,7 +70,10 @@ class GUISession(Session):
 
         def customize_light(customized_light):
             prev_theme = self.agents[0].retrieve_theme(self.state[theme])
-            self.agents[0].customize_theme(prev_theme, { light: color_dict[customized_light] })
+            new_light = name_to_theme[self.state[theme]].light
+            if not customized_light == RESET:
+                new_light = color_dict[customized_light]
+            self.agents[0].customize_theme(prev_theme, { light: new_light })
 
         # ui elements
         self.agent_box = Text(self.app, align = "top", width = "fill")
@@ -79,10 +87,12 @@ class GUISession(Session):
         self.text_lumi = Text(self.app, text="Luminance", align="left")
         self.luminence_textbox = TextBox(self.app, align = "left")
 
+        # do we keep the color attribute in the final prototype?
+        # if so, need a "custom" option to allow any color selected by user
         color_dict = { 'red': (243,115,54), 'yellow': (247,204,59) }
 
-        
-        self.customize_light_menu = Combo(self.app, command=customize_light, options=color_dict.keys(), align="bottom",width="fill")
+        # adding a temporary "reset" option as proof of concept
+        self.customize_light_menu = Combo(self.app, command=customize_light, options=list(color_dict.keys()) + [RESET], align="bottom",width="fill")
         self.text_customize_light = Text(self.app, text="Customize Light for this theme", align="bottom", width = "fill")
         # Define picture capture
         self.output_bar = Text(self.app, text = "Getting Output...", align = "left")
@@ -94,24 +104,39 @@ class GUISession(Session):
 
     def handle_global_triggers(self, triggers):
         print(triggers)
-        belt_warning = triggers["TurbulenceRuleGlobal"]["Safety Belt Warning"]
-        theme_name = triggers["TurbulenceRuleGlobal"]["Theme"]
 
-        if theme_name:
+        if not triggers:
+            return
+
+        all_updates = {}
+        for val in triggers.values():
+            all_updates.update(val)
+
+        # anything that uses #self.agents[0] should consider multiple agents
+        if theme in all_updates:
+            theme_name = all_updates[theme]
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.change_color(updated_theme.light)
+            self.play_album(updated_theme.music)
             self.trigger_box.value = "Theme:" + updated_theme.name
             self.state[theme] = updated_theme.name
 
-        if belt_warning:
+        if safety_belt_warning in all_updates:
             self.trigger_box.value = "Please Fasten your Belt"
 
-        # if theme == "quiet":
-        #     self.trigger_box.value += "Entring Quiet Theme"
-        #     self.change_color(self.bright_color)
-
     def change_color(self,color):
-            self.app.bg = color
+        self.app.bg = color
+
+    def play_album(self, path):
+        if not path:
+            return
+        path_to_album = './theme/assets/' + path
+        music_files = os.listdir(path_to_album)
+        if music_files:
+            music_file = path_to_album + '/' + music_files[0]
+            pygame.mixer.music.load(music_file)
+            pygame.mixer.music.play()
+            # playsound(path_to_album + '/' + music_files[0], False)
 
     def run(self):
 
@@ -128,7 +153,6 @@ class GUISession(Session):
     def gather_state(self):
         return self.state
 
-# We should look into running multiple agents at once using python subprocesses
 def main():
     session = GUISession()
     agent = Agent()

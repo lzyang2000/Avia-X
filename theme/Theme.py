@@ -32,25 +32,25 @@ class Warm(GlobalTheme):
     name = warm
     image = None
     light = (255, 231, 211)
-    music = './warm_theme/music_playlist'
+    music = 'warm_theme/music_playlist'
 
 class Quiet(GlobalTheme):
     name = quiet
-    image = ['./quiet_theme/photos/1.png', './quite_theme/photos/2.png']
+    image = ['quiet_theme/photos/1.png', 'quite_theme/photos/2.png']
     light = (99, 200, 242)
-    music = './quite_theme/music_playlist'
+    music = 'quiet_theme/music_playlist'
 
 class Engaged(GlobalTheme):
     name = engaged
-    image = ['./engaged_theme/photos/1.png', './engaged_theme/photos/2.png']
-    light = 70
-    music = './engaged_theme/music_playlist'
+    image = ['engaged_theme/photos/1.png', 'engaged_theme/photos/2.png']
+    light = (70, 70, 255)
+    music = 'engaged_theme/music_playlist'
 
 class Romantic(GlobalTheme):
     name = romantic
-    image = ['./romantic_theme/photos/r1.png', './romantic_theme/photos/r2.png']
+    image = ['romantic_theme/photos/r1.png', 'romantic_theme/photos/r2.png']
     light = (216, 141, 188)
-    music = './romantic_theme/music_playlist'
+    music = 'romantic_theme/music_playlist'
 
 class PersonalTheme(Theme):
     seat_angle = None
