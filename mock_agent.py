@@ -45,6 +45,7 @@ class Agent:
         print('User {} login successful.'.format(self.user.username))
 
     def complete_onboarding_process(self, user):
+        print(2)
         updated_preference = {}
         # These should have graphic display in the UI, so optimization on type recognition is not necessary
         updated_preference['global_theme'] = self.ask_and_expect_typed_response('Select your favorite cabinet theme. ', name_to_global_theme.keys())
@@ -146,3 +147,10 @@ class Agent:
         self.user = None
         current_user_data = user_database.find()
         self.wait_for_user_session(current_user_data)
+
+
+class GUIAgent(Agent):
+    def __init__(self, username, theme):
+        user_created, error_msg = User.create_new_user(self, username, User.Info())
+        self.user = user_created
+        self.user.set_preference({'global_theme':theme})
