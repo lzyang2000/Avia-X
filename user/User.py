@@ -31,7 +31,7 @@ class User:
         if username in all_user_names:
             return (None, 'User with username {} already exists. Please try a different one.').format(info.name)
         user = User(agent, username, info)
-        agent.complete_onboarding_process(user)
+        #agent.complete_onboarding_process(user)
         return (user, None)
 
     @staticmethod

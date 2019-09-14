@@ -1,5 +1,5 @@
 from emotion_recognition.src.image_emotion_demo import *
-from mock_agent import Agent
+from mock_agent import *
 from user import *
 from theme import *
 from guizero import *
@@ -50,12 +50,12 @@ class Session:
 
 class GUISession(Session):
 
-    state = { turbulence: 1 , luminence : 3, theme: None }
+    state = {turbulence: 1 , luminence : 3, theme: None}
     warm_color = (255, 231, 211)
     bright_color = (255, 250, 229)
     def __init__(self):
         super().__init__()
-        self.app = App()
+        
         pygame.mixer.init()
 
         def turbulence_capture(slider_value):
@@ -75,8 +75,23 @@ class GUISession(Session):
                 new_light = color_dict[customized_light]
             self.agents[0].customize_theme(prev_theme, { light: new_light })
 
-        # ui elements
-        self.agent_box = Text(self.app, align = "top", width = "fill")
+        def ask_theme():
+            self.theme_text.visible = True
+            self.all_themes.visible = True
+
+        def custom_theme(custom_theme):
+            print(1)
+            self.chosen_theme = custom_theme
+
+        self.app = App(title="Central System")
+        
+        
+        
+        # surname = TextBox(app, grid=[1,1])
+        # dob_label = Text(app, text="Date of Birth", grid=[0,2], align="left")
+        # dob = TextBox(app, grid=[1,2])
+        # create ui elements for central system
+        self.agent_name = Text(self.app, align = "top", width = "fill")
         self.trigger_box = Text(self.app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
 
         self.turbulence = Slider(self.app, command=turbulence_capture, horizontal=False, align = "left", start = 1, end = 100)
@@ -96,11 +111,22 @@ class GUISession(Session):
         self.text_customize_light = Text(self.app, text="Customize Light for this theme", align="bottom", width = "fill")
         # Define picture capture
         self.output_bar = Text(self.app, text = "Getting Output...", align = "left")
+        
+        self.customer = Window(self.app, title="Customer", layout="grid")
+        # create customer elements
+        Text(self.customer, text="Username", grid=[0,0], align="left")
+        self.username = TextBox(self.customer, grid=[1,0])
+        self.theme_text = Text(self.customer, text = "Select your favorite cabinet theme.", grid=[1,2], visible=False)
+        self.all_themes = Combo(self.customer, command=custom_theme, options=name_to_global_theme.keys(), grid=[0,2], align="left", visible = False)
+        PushButton(self.customer, command=ask_theme, text = "Choose your theme", grid=[0,1], align="left")
+        self.execute = PushButton(self.customer, command = self.run, text = "Apply", grid=[0,3], align="left")
 
+        self.app.display()
     def new_agent_login(self, agent):
         self.agents.append(agent)
         self.state[theme] = normal
-        self.agent_box.value = ''.join([agent.user.username for agent in self.agents])
+
+        self.agent_name.value = ''.join([agent.user.username for agent in self.agents])
 
     def handle_global_triggers(self, triggers):
         print(triggers)
@@ -139,7 +165,8 @@ class GUISession(Session):
             # playsound(path_to_album + '/' + music_files[0], False)
 
     def run(self):
-
+        new_agent = GUIAgent(self.username.value, self.chosen_theme)
+        self.new_agent_login(new_agent)
         def respond_to_state():
             out_put = main_predict()
             if out_put == None:
@@ -148,16 +175,16 @@ class GUISession(Session):
             self.handle_state(self.state)
 
         self.output_bar.repeat(1000, respond_to_state)
-        self.app.display()
+        
 
     def gather_state(self):
         return self.state
 
 def main():
     session = GUISession()
-    agent = Agent()
-    session.new_agent_login(agent)
-    session.run()
+    # agent = Agent()
+    # session.new_agent_login(agent)
+    # session.run()
 
 if __name__ == '__main__':
     main()
