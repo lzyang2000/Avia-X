@@ -29,7 +29,7 @@ class User:
     def create_new_user(agent, username, info):
         all_user_names = database.find().keys()
         if username in all_user_names:
-            return (None, 'User with username {} already exists. Please try a different one.').format(info.name)
+            return (None, 'User with username {} already exists. Please try a different one.'.format(username))
         user = User(agent, username, info)
         #agent.complete_onboarding_process(user)
         return (user, None)
