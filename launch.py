@@ -151,6 +151,8 @@ class GUISession(Session):
             all_updates.update(val)
 
         # anything that uses #self.agents[0] should consider multiple agents
+        if safety_belt_warning in all_updates:
+            self.trigger_box.value = "Please Fasten your Belt"
         if theme in all_updates:
             theme_name = all_updates[theme]
             if theme_name == 'preference':
@@ -158,10 +160,8 @@ class GUISession(Session):
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.display_theme(updated_theme)
 
-        if safety_belt_warning in all_updates:
-            self.trigger_box.value = "Please Fasten your Belt"
-        else:
-            self.trigger_box.value = "Belt:Safe. Theme:Normal"
+
+
 
     def change_color(self,color):
         self.app.bg = color

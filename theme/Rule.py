@@ -93,6 +93,32 @@ class WarmOnLuminanceRuleRemove(WarmOnLuminanceRule):
             WarmOnLuminanceRuleRemove.triggered = True
             return WarmOnLuminanceRuleRemove.response
 
+class WarmOnEmotionRule(Rule):
+    name = 'WarmOnEmotionRule'
+    is_global = True
+    response = { theme: warm }
+    options = ['sad', 'angry', 'fear']
+
+    def trigger(state):
+        if WarmOnEmotionRule.triggered:
+            return
+        if state[emotion] in WarmOnEmotionRule.options:
+            WarmOnEmotionRule.triggered = True
+            WarmOnEmotionRuleRemove.triggered = False
+            return WarmOnEmotionRule.response
+
+class WarmOnEmotionRuleRemove(WarmOnEmotionRule):
+    name = 'WarmOnEmotionRuleRemove'
+    response = { theme: 'preference' }
+
+    def trigger(state):
+        if WarmOnEmotionRuleRemove.triggered:
+            return
+        if state[emotion] not in WarmOnEmotionRule.options:
+            WarmOnEmotionRule.triggered = False
+            WarmOnEmotionRuleRemove.triggered = True
+            return WarmOnEmotionRuleRemove.response
+
 
 # This one should not be overridable. We let it be for test purposes
 class TurbulenceRulePersonal(Rule):
@@ -111,5 +137,5 @@ class TurbulenceRulePersonal(Rule):
             return TurbulenceRulePersonal.personal_entertainment_response
         return {}
 
-adjustment_rules = [WarmOnLuminanceRule, WarmOnLuminanceRuleRemove, QuietOnTurbulenceRule, QuietOnTurbulenceRuleRemove, SafetyBeltRule, SafetyBeltRuleRemove, TurbulenceRulePersonal]
+adjustment_rules = [WarmOnLuminanceRule, WarmOnLuminanceRuleRemove, QuietOnTurbulenceRule, QuietOnTurbulenceRuleRemove, SafetyBeltRule, SafetyBeltRuleRemove, WarmOnEmotionRule, WarmOnEmotionRuleRemove, TurbulenceRulePersonal]
 name_to_rule = { rule.name: rule for rule in adjustment_rules }
