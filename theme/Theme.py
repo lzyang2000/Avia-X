@@ -14,7 +14,7 @@ class CustomizedTheme(Theme):
 class GlobalTheme(Theme):
     name = normal
     image = None
-    light = (255, 250, 229)
+    light = (255, 231, 211)
     music = None
 
     def to_dict(self):
@@ -31,7 +31,8 @@ class CustomizedGlobalTheme(CustomizedTheme, GlobalTheme):
 class Warm(GlobalTheme):
     name = warm
     image = None
-    light = (255, 231, 211)
+    light = (255, 250, 229)
+    
     music = 'warm_theme/music_playlist'
 
 class Quiet(GlobalTheme):
