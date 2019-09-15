@@ -122,13 +122,24 @@ class GUISession(Session):
         self.execute = PushButton(self.customer, command = self.run, text = "Apply", grid=[0,3], align="left")
 
         self.app.display()
+
     def new_agent_login(self, agent):
         self.agents.append(agent)
-        self.state[theme] = normal
+        preferred_theme = agent.user.info.preference['global_theme']
+
+        theme_to_display = agent.retrieve_theme(preferred_theme)
+        self.display_theme(theme_to_display)
 
         self.agent_name.value = ''.join([agent.user.username for agent in self.agents])
 
+    def display_theme(self, theme):  
+        self.change_color(theme.light)
+        self.play_album(theme.music)
+        self.trigger_box.value = "Theme:" + theme.name
+        self.state[theme] = theme.name
+
     def handle_global_triggers(self, triggers):
+        print(self.state)
         print(triggers)
 
         if not triggers:
@@ -142,10 +153,7 @@ class GUISession(Session):
         if theme in all_updates:
             theme_name = all_updates[theme]
             updated_theme = self.agents[0].retrieve_theme(theme_name)
-            self.change_color(updated_theme.light)
-            self.play_album(updated_theme.music)
-            self.trigger_box.value = "Theme:" + updated_theme.name
-            self.state[theme] = updated_theme.name
+            self.display_theme(updated_theme)
 
         if safety_belt_warning in all_updates:
             self.trigger_box.value = "Please Fasten your Belt"
