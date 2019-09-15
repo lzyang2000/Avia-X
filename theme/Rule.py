@@ -12,53 +12,86 @@ class Rule:
     def trigger(state):
         return False
 
-
-class TurbulenceRuleGlobal(Rule):
-
-    name = 'TurbulenceRuleGlobal'
+class SafetyBeltRule(Rule):
+    name = 'SafetyBeltRule'
     is_global = True
-    safety_belt_threshold = 60
-    safety_belt_response = { safety_belt_warning: True }
-    warm_theme_threshold = 70
-    warm_theme_response = { theme: warm }
-    quiet_theme_threshold = 80
-    quiet_theme_response = { theme: quiet }
-
+    threshold = 60
+    response = { safety_belt_warning: True }
+    
     def trigger(state):
-        if TurbulenceRuleGlobal.triggered:
+        if SafetyBeltRule.triggered:
             return
-        # return_dic = {safety_belt_warning: False, theme: normal}
-        return_dic = {}
-        if state[turbulence] > TurbulenceRuleGlobal.safety_belt_threshold:
-            return_dic.update(TurbulenceRuleGlobal.safety_belt_response)
-        if state[luminence] > TurbulenceRuleGlobal.warm_theme_threshold or state[emotion] in ["sad", "angry", "fear"]:
-            return_dic.update(TurbulenceRuleGlobal.warm_theme_response)
-        if state[turbulence] > TurbulenceRuleGlobal.quiet_theme_threshold:
-            return_dic.update(TurbulenceRuleGlobal.quiet_theme_response)
-        if return_dic:
-            TurbulenceRuleGlobal.triggered = True
-            TurbulenceRuleGlobalRemove.triggered = False
-        return return_dic
+        if state[turbulence] > SafetyBeltRule.threshold:
+            SafetyBeltRule.triggered = True
+            SafetyBeltRuleRemove.triggered = False
+            return SafetyBeltRule.response
 
-class TurbulenceRuleGlobalRemove(TurbulenceRuleGlobal):
-
-    name = 'TurbulenceRuleGlobalRemove'
+class SafetyBeltRuleRemove(SafetyBeltRule):
+    name = 'SafetyBeltRuleRemove'
     triggered = True
-    safety_belt_response = { safety_belt_warning: False }
-    normal_theme_response = { theme: normal }
+    response = { safety_belt_warning: False }
 
     def trigger(state):
-        if TurbulenceRuleGlobalRemove.triggered:
+        if SafetyBeltRuleRemove.triggered:
             return
-        return_dic = {}
-        if state[turbulence] < TurbulenceRuleGlobalRemove.safety_belt_threshold:
-            return_dic.update(TurbulenceRuleGlobalRemove.safety_belt_response)
-            if not state[theme] == normal:
-                return_dic.update(TurbulenceRuleGlobalRemove.normal_theme_response)
-            
-            TurbulenceRuleGlobal.triggered = False
-            TurbulenceRuleGlobalRemove.triggered = True
-        return return_dic
+        if state[turbulence] < SafetyBeltRuleRemove.threshold:
+            SafetyBeltRule.triggered = False
+            SafetyBeltRuleRemove.triggered = True
+            return SafetyBeltRuleRemove.response
+
+class QuietOnTurbulenceRule(Rule):
+    name = 'QuietOnTurbulenceRule'
+    is_global = True
+    threshold = 80
+    response = { theme: quiet }
+
+    def trigger(state):
+        if QuietOnTurbulenceRule.triggered:
+            return
+        if state[turbulence] > QuietOnTurbulenceRule.threshold:
+            QuietOnTurbulenceRule.triggered = True
+            QuietOnTurbulenceRuleRemove.triggered = False
+            return QuietOnTurbulenceRule.response
+
+class QuietOnTurbulenceRuleRemove(QuietOnTurbulenceRule):
+    name = 'QuietOnTurbulenceRuleRemove'
+    triggered = True
+    response = { theme: 'preference' }
+
+    def trigger(state):
+        if QuietOnTurbulenceRuleRemove.triggered:
+            return
+        if state[turbulence] < QuietOnTurbulenceRuleRemove.threshold:
+            QuietOnTurbulenceRule.triggered = False
+            QuietOnTurbulenceRuleRemove.triggered = True
+            return QuietOnTurbulenceRuleRemove.response
+
+class WarmOnLuminanceRule(Rule):
+    name = 'WarmOnLuminanceRule'
+    response = { theme: warm }
+    is_global = True
+    threshold = 7
+
+    def trigger(state):
+        if WarmOnLuminanceRule.triggered:
+            return
+        if state[luminance] > WarmOnLuminanceRule.threshold:
+            WarmOnLuminanceRule.triggered = True
+            WarmOnLuminanceRuleRemove.triggered = False
+            return WarmOnLuminanceRule.response
+
+class WarmOnLuminanceRuleRemove(WarmOnLuminanceRule):
+    name = 'WarmOnLuminanceRuleRemove'
+    triggered = True
+    response = { theme: 'preference' }
+
+    def trigger(state):
+        if WarmOnLuminanceRuleRemove.triggered:
+            return
+        if state[luminance] < WarmOnLuminanceRule.threshold:
+            WarmOnLuminanceRule.triggered = False
+            WarmOnLuminanceRuleRemove.triggered = True
+            return WarmOnLuminanceRuleRemove.response
 
 
 # This one should not be overridable. We let it be for test purposes
@@ -78,5 +111,5 @@ class TurbulenceRulePersonal(Rule):
             return TurbulenceRulePersonal.personal_entertainment_response
         return {}
 
-adjustment_rules = [TurbulenceRuleGlobal, TurbulenceRuleGlobalRemove, TurbulenceRulePersonal]
+adjustment_rules = [WarmOnLuminanceRule, WarmOnLuminanceRuleRemove, QuietOnTurbulenceRule, QuietOnTurbulenceRuleRemove, SafetyBeltRule, SafetyBeltRuleRemove, TurbulenceRulePersonal]
 name_to_rule = { rule.name: rule for rule in adjustment_rules }
