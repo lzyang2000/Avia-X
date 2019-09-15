@@ -159,7 +159,10 @@ class GUISession(Session):
             self.display_theme(updated_theme)
 
         if safety_belt_warning in all_updates:
-            self.trigger_box.value = "Please Fasten your Belt"
+            if all_updates[safety_belt_warning]:
+                self.trigger_box.value = "Please Fasten your Belt"
+            else:
+                self.trigger_box.value = ''
 
     def change_color(self,color):
         self.app.bg = color
