@@ -57,3 +57,14 @@ output_bar = Text(app, text = "Getting Output...", align = "left")
 output_bar.repeat(5000, display_output)
 
 app.display()
+
+
+
+
+
+
+
+# create customer elements
+
+
+self.app.display()

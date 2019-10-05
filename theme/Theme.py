@@ -15,6 +15,7 @@ class GlobalTheme(Theme):
     name = normal
     image = None
     light = (255, 250, 229)
+    
     music = None
 
     def to_dict(self):

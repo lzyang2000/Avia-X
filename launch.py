@@ -26,7 +26,7 @@ class Session:
 
     # Get emotion and bar input from GUI
     def gather_state(self):
-        return { turbulence: 85, luminance: 3, emotion:"neutral" }
+        return {turbulence: 85, luminance: 3, emotion:"neutral" }
 
     def handle_state(self, state):
         global_triggers = {}
@@ -84,43 +84,41 @@ class GUISession(Session):
             print(1)
             self.chosen_theme = custom_theme
 
-        self.app = App(title="Central System")
-        
-        
-        
+        self.app = App(title="Central System", height = 150, width = 200, layout="grid")
+        Text(self.app, text="Username", grid=[0,0], align="left")
+        self.username = TextBox(self.app, grid=[1,0])
+        self.theme_text = Text(self.app, text = "Select your favorite cabinet theme.", grid=[1,2], visible=False)
+        self.all_themes = Combo(self.app, command=custom_theme, options=name_to_global_theme.keys(), grid=[0,2], align="left", visible = False)
+        PushButton(self.app, command=ask_theme, text = "Choose your theme", grid=[0,1], align="left")
+        self.execute = PushButton(self.app, command = self.run, text = "Login", grid=[0,3], align="left")
+                
         # surname = TextBox(app, grid=[1,1])
         # dob_label = Text(app, text="Date of Birth", grid=[0,2], align="left")
         # dob = TextBox(app, grid=[1,2])
         # create ui elements for central system
-        self.agent_name = Text(self.app, align = "top", width = "fill")
-        self.trigger_box = Text(self.app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
+        self.info = Window(self.app, title="Avia-X is running", visible = False)
 
-        self.turbulence = Slider(self.app, command=turbulence_capture, horizontal=False, align = "left", start = 1, end = 100)
-        self.text_turbulence = Text(self.app, text="Turbulence", align="left")
-        self.turbulence_textbox = TextBox(self.app, align = "left")
 
-        self.lumience = Slider(self.app, command=lumi_capture, horizontal = False, align = "left", start = 2, end = 10)
-        self.text_lumi = Text(self.app, text="Luminance", align="left")
-        self.luminance_textbox = TextBox(self.app, align = "left")
+        self.agent_name = Text(self.info, align = "top", width = "fill")
+        self.trigger_box = Text(self.info, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
+
+        self.turbulence = Slider(self.info, command=turbulence_capture, horizontal=False, align = "left", start = 1, end = 100)
+        self.text_turbulence = Text(self.info, text="Turbulence", align="left")
+        self.turbulence_textbox = TextBox(self.info, align = "left")
+
+        self.lumience = Slider(self.info, command=lumi_capture, horizontal = False, align = "left", start = 2, end = 10)
+        self.text_lumi = Text(self.info, text="Luminance", align="left")
+        self.luminance_textbox = TextBox(self.info, align = "left")
 
         # do we keep the color attribute in the final prototype?
         # if so, need a "custom" option to allow any color selected by user
         color_dict = { 'red': (243,115,54), 'yellow': (247,204,59) }
 
         # adding a temporary "reset" option as proof of concept
-        self.customize_light_menu = Combo(self.app, command=customize_light, options=list(color_dict.keys()) + [RESET], align="bottom",width="fill")
-        self.text_customize_light = Text(self.app, text="Customize Light for this theme", align="bottom", width = "fill")
+        self.customize_light_menu = Combo(self.info, command=customize_light, options=list(color_dict.keys()) + [RESET], align="bottom",width="fill")
+        self.text_customize_light = Text(self.info, text="Customize Light for this theme", align="bottom", width = "fill")
         # Define picture capture
-        self.output_bar = Text(self.app, text = "Getting Output...", align = "left")
-        
-        self.customer = Window(self.app, title="Customer", layout="grid")
-        # create customer elements
-        Text(self.customer, text="Username", grid=[0,0], align="left")
-        self.username = TextBox(self.customer, grid=[1,0])
-        self.theme_text = Text(self.customer, text = "Select your favorite cabinet theme.", grid=[1,2], visible=False)
-        self.all_themes = Combo(self.customer, command=custom_theme, options=name_to_global_theme.keys(), grid=[0,2], align="left", visible = False)
-        PushButton(self.customer, command=ask_theme, text = "Choose your theme", grid=[0,1], align="left")
-        self.execute = PushButton(self.customer, command = self.run, text = "Apply", grid=[0,3], align="left")
+        self.output_bar = Text(self.info, text = "Getting Output...", align = "left")
 
         self.app.display()
 
@@ -151,48 +149,14 @@ class GUISession(Session):
             all_updates.update(val)
 
         # anything that uses #self.agents[0] should consider multiple agents
+        if safety_belt_warning in all_updates:
+            self.trigger_box.value = "Please Fasten your Belt"
         if theme in all_updates:
             theme_name = all_updates[theme]
             if theme_name == 'preference':
                 theme_name = self.agents[0].user.info.preference['global_theme']
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.display_theme(updated_theme)
-
-        if safety_belt_warning in all_updates:
-            if all_updates[safety_belt_warning]:
-                self.trigger_box.value = "Please Fasten your Belt"
-            else:
-                self.trigger_box.value = ''
-
-    def change_color(self,color):
-        self.app.bg = color
-
-    def play_album(self, path):
-        if not path:
-            return
-        path_to_album = './theme/assets/' + path
-        music_files = os.listdir(path_to_album)
-        if music_files:
-            music_file = path_to_album + '/' + music_files[0]
-            pygame.mixer.music.load(music_file)
-            pygame.mixer.music.play()
-            # playsound(path_to_album + '/' + music_files[0], False)
-
-    def run(self):
-        new_agent = GUIAgent(self.username.value, self.chosen_theme)
-        self.new_agent_login(new_agent)
-        def respond_to_state():
-            out_put = main_predict()
-            if out_put == None:
-                self.state[emotion] = "neutral"
-            self.state[emotion] = out_put
-            self.handle_state(self.state)
-
-        self.output_bar.repeat(1000, respond_to_state)
-        
-
-    def gather_state(self):
-        return self.state
 
 def main():
     session = GUISession()
