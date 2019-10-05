@@ -158,40 +158,6 @@ class GUISession(Session):
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.display_theme(updated_theme)
 
-
-
-
-    def change_color(self,color):
-        self.app.bg = color
-
-    def play_album(self, path):
-        if not path:
-            return
-        path_to_album = './theme/assets/' + path
-        music_files = os.listdir(path_to_album)
-        if music_files:
-            music_file = path_to_album + '/' + music_files[0]
-            pygame.mixer.music.load(music_file)
-            pygame.mixer.music.play()
-            # playsound(path_to_album + '/' + music_files[0], False)
-
-    def run(self):
-        self.info.visible=True
-        new_agent = GUIAgent(self.username.value, self.chosen_theme)
-        self.new_agent_login(new_agent)
-        def respond_to_state():
-            out_put = main_predict()
-            if out_put == None:
-                self.state[emotion] = "neutral"
-            self.state[emotion] = out_put
-            self.handle_state(self.state)
-
-        self.output_bar.repeat(1000, respond_to_state)
-        
-
-    def gather_state(self):
-        return self.state
-
 def main():
     session = GUISession()
     # agent = Agent()
