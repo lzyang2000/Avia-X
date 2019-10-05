@@ -26,7 +26,7 @@ class Session:
 
     # Get emotion and bar input from GUI
     def gather_state(self):
-        return { turbulence: 85, luminence: 3, emotion:"neutral" }
+        return { turbulence: 85, luminance: 3, emotion:"neutral" }
 
     def handle_state(self, state):
         global_triggers = {}
@@ -50,7 +50,7 @@ class Session:
 
 class GUISession(Session):
 
-    state = {turbulence: 1 , luminence : 3, theme: None}
+    state = {turbulence: 1 , luminance : 3, theme: None}
     warm_color = (255, 231, 211)
     bright_color = (255, 250, 229)
     def __init__(self):
@@ -65,8 +65,8 @@ class GUISession(Session):
 
         def lumi_capture(slider_value):
             slider_value = int(slider_value)
-            self.state[luminence] = slider_value
-            self.luminence_textbox.value = slider_value
+            self.state[luminance] = slider_value
+            self.luminance_textbox.value = slider_value
 
         def customize_light(customized_light):
             prev_theme = self.agents[0].retrieve_theme(self.state[theme])
@@ -74,6 +74,7 @@ class GUISession(Session):
             if not customized_light == RESET:
                 new_light = color_dict[customized_light]
             self.agents[0].customize_theme(prev_theme, { light: new_light })
+            self.change_color(new_light)
 
         def ask_theme():
             self.theme_text.visible = True
@@ -100,7 +101,7 @@ class GUISession(Session):
 
         self.lumience = Slider(self.app, command=lumi_capture, horizontal = False, align = "left", start = 2, end = 10)
         self.text_lumi = Text(self.app, text="Luminance", align="left")
-        self.luminence_textbox = TextBox(self.app, align = "left")
+        self.luminance_textbox = TextBox(self.app, align = "left")
 
         # do we keep the color attribute in the final prototype?
         # if so, need a "custom" option to allow any color selected by user
@@ -122,13 +123,24 @@ class GUISession(Session):
         self.execute = PushButton(self.customer, command = self.run, text = "Apply", grid=[0,3], align="left")
 
         self.app.display()
+
     def new_agent_login(self, agent):
         self.agents.append(agent)
-        self.state[theme] = normal
+        preferred_theme = agent.user.info.preference['global_theme']
+
+        theme_to_display = agent.retrieve_theme(preferred_theme)
+        self.display_theme(theme_to_display)
 
         self.agent_name.value = ''.join([agent.user.username for agent in self.agents])
 
+    def display_theme(self, displayed_theme):  
+        self.change_color(displayed_theme.light)
+        self.play_album(displayed_theme.music)
+        self.trigger_box.value = "Theme:" + displayed_theme.name
+        self.state[theme] = displayed_theme.name
+
     def handle_global_triggers(self, triggers):
+        print(self.state)
         print(triggers)
 
         if not triggers:
@@ -141,14 +153,16 @@ class GUISession(Session):
         # anything that uses #self.agents[0] should consider multiple agents
         if theme in all_updates:
             theme_name = all_updates[theme]
+            if theme_name == 'preference':
+                theme_name = self.agents[0].user.info.preference['global_theme']
             updated_theme = self.agents[0].retrieve_theme(theme_name)
-            self.change_color(updated_theme.light)
-            self.play_album(updated_theme.music)
-            self.trigger_box.value = "Theme:" + updated_theme.name
-            self.state[theme] = updated_theme.name
+            self.display_theme(updated_theme)
 
         if safety_belt_warning in all_updates:
-            self.trigger_box.value = "Please Fasten your Belt"
+            if all_updates[safety_belt_warning]:
+                self.trigger_box.value = "Please Fasten your Belt"
+            else:
+                self.trigger_box.value = ''
 
     def change_color(self,color):
         self.app.bg = color

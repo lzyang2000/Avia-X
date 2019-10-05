@@ -22,7 +22,7 @@ turbulence = 'Turbulence'
 ambiant_light = 'Ambiant Light'
 safety_belt_warning = 'Safety Belt Warning'
 entertainment_pause = 'Entertainment Pause'
-luminence = "Luminence"
+luminance = "Luminance"
 emotion = "Emotion"
 
 action = 'action'
