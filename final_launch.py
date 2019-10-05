@@ -30,19 +30,13 @@ class Session:
 
     def handle_state(self, state):
         global_triggers = {}
-        personal_triggers = {}
         for rule in adjustment_rules:
             trigger_result = rule.trigger(state)
             if trigger_result:
                 if rule.is_global:
                     global_triggers.update({rule.name: trigger_result })
-                # else:
-                #     personal_triggers.update({ rule.name: trigger_result })
         self.handle_global_triggers(global_triggers)
 
-        # print('Following personal adjustments triggered: {}'.format(personal_triggers.keys()))
-        # for agent in self.agents:
-        #     agent.handle_automatic_adjustments(personal_triggers, state)
 
     # TODO: discuss how to override a global rule trigger
     def handle_global_triggers(self, triggers):
@@ -126,9 +120,9 @@ class GUISession(Session):
         self.info.visible=True
         new_agent = GUIAgent(self.username.value, self.chosen_theme)
         self.new_agent_login(new_agent)
-        
-        
+
         def respond_to_state():
+            
             self.update_state()
             self.handle_state(self.state)
 
