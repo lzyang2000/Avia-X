@@ -190,6 +190,26 @@ class GUISession(Session):
     def gather_state(self):
         return self.state
 
+    def update_state(self):
+        self.info = Infos()
+
+class Infos:
+    def __init__(self):
+        # Turbulence : google docs, Light : sensor.lux, facial expr
+        self.turbulence = 0
+
+        # Read in light data
+        import time
+        import board
+        import busio
+        import adafruit_tsl2591
+        # Initialize the I2C bus.
+        i2c = busio.I2C(board.SCL, board.SDA)
+        # Initialize the sensor.
+        sensor = adafruit_tsl2591.TSL2591(i2c)
+        self.light = sensor.lux
+
+
 def main():
     session = GUISession()
     # agent = Agent()
