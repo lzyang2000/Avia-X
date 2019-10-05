@@ -77,32 +77,47 @@ class GUISession(Session):
             self.app.hide()
             return
 
-        self.app = App(title = "User System", height = 150, width = 300, layout="grid", bg = "black")
+        self.app = App(title = "User System", height = 150, width = 260, layout="grid", bg = "black")
         Text(self.app, text="Who's Flying?", grid=[3,0], color = "white")
+        Text(self.app, text="", grid=[3,1])
+        Text(self.app, text="", grid=[3,2])
         Text(self.app, text="Username", grid=[3,2], color = "white")
-        self.username = TextBox(self.app, grid=[5,2], width="fill")
+        self.username = TextBox(self.app, grid=[4,2], width="fill")
         self.username.text_color = "white"
         Text(self.app, text="", grid=[3,3])
         Text(self.app, text="", grid=[3,6])
         self.login = PushButton(self.app, pady=0, padx=0,command = user_login, text = "Login", grid=[3,6])
         self.login.text_color = "white"
-        self.newuser = PushButton(self.app, pady=0,padx=0,command = user_create, text = "create new user", grid=[5,6])
+        self.newuser = PushButton(self.app, pady=0,padx=0,command = user_create, text = "create new user", grid=[4,6])
         self.newuser.text_color = "white"
+        
 
         # Create new user
-        self.create_new = Window(self.app, title="Create New Avia-X User", height = 150, width = 500, visible=False, layout = "grid")
-        Text(self.create_new, text="Enter Your Username", grid=[0,0], align="left")
+        self.create_new = Window(self.app, title="Create New Avia-X User", height = 300, width = 500, visible=False, layout = "grid",bg = "black")
+        Text(self.create_new, text="Enter Your Username", grid=[0,0], align="left", color = "white")
         self.new_username = TextBox(self.create_new, grid=[1,0], align = "left")
-        self.theme_text = Text(self.create_new, text = "Select your favorite cabinet theme.", grid=[1,2], visible=False)
-        self.all_themes = Combo(self.create_new, command=custom_theme, options=name_to_global_theme.keys(), grid=[0,2], align="left", visible = False)
-        PushButton(self.create_new, command=ask_theme, text = "Choose your theme", grid=[0,1], align="left")
-        self.execute = PushButton(self.create_new, command = self.run, text = "Create and Login", grid=[0,3], align="left")
-        
+        self.new_username.text_color = "white"
+        Text(self.create_new, text="", grid=[0,1])
+        Text(self.create_new, text="", grid=[0,2])
+        self.theme_text = Text(self.create_new, text = "Select your favorite cabinet theme.", grid=[0,4], visible=False, color = "white")
+        self.all_themes = Combo(self.create_new, command=custom_theme, options=name_to_global_theme.keys(), grid=[1,4], align="left", visible = False)
+        self.all_themes.text_color = "white"
+        self.choose_theme = PushButton(self.create_new, command=ask_theme, text = "Choose your theme", grid=[0,3], align="left")
+        self.choose_theme.text_color = "white"
+        Text(self.create_new, text="", grid=[0,5])
+        Text(self.create_new, text="", grid=[0,6])
+        self.execute = PushButton(self.create_new, command = self.run, text = "Create and Login", grid=[0,7], align="left")
+        self.execute.text_color = "white"
+
         # Info Window
         self.info = Window(self.app, title="Avia-X is running", visible = False)
         # Display Environment Info
         self.agent_name = Text(self.info, align = "top", width = "fill")
         self.trigger_box = Text(self.info, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
+        
+        # Display
+        self.text_emotion = Text(self.info, text="Emotion", align="left")
+        self.text_pressure = Text(self.info, text="Pressure", align="left")
         self.text_turbulence = Text(self.info, text="Getting Turbulence", align="left")
         self.text_lumi = Text(self.info, text="Getting Luminance", align="left")
 
@@ -133,6 +148,12 @@ class GUISession(Session):
         self.play_album(displayed_theme.music)
         self.trigger_box.value = "Theme:" + displayed_theme.name
         self.state[theme] = displayed_theme.name
+        
+    def display_state(self):
+        self.text_emotion = "Emotion:" + self.state[emotion]
+        self.text_lumi = "Luminance:" + self.state[luminance]
+        self.text_pressure = "Pressure:" + self.state[pressure]
+        self.text_turbulence = "Turbulence:" + "High" if self.state[turbulence] else "Low"
 
     def handle_global_triggers(self, triggers):
         print(self.state)
@@ -154,7 +175,7 @@ class GUISession(Session):
                 theme_name = self.agents[0].user.info.preference['global_theme']
             updated_theme = self.agents[0].retrieve_theme(theme_name)
             self.display_theme(updated_theme)
-
+            self.display_state()
 
     # Helper Functions
     def new_agent_login(self, agent):

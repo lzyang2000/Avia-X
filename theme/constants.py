@@ -24,6 +24,7 @@ safety_belt_warning = 'Safety Belt Warning'
 entertainment_pause = 'Entertainment Pause'
 luminance = "Luminance"
 emotion = "Emotion"
+pressure = "Pressure"
 
 action = 'action'
 policy = 'policy'
