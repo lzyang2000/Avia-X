@@ -7,7 +7,9 @@ from guizero import *
 import pygame
 import time
 import os
-
+import board
+import busio
+import adafruit_tsl2591
 RESET = "reset"
 
 class Session:
@@ -144,7 +146,7 @@ class GUISession(Session):
             self.update_state()
             self.handle_state(self.state)
 
-        self.output_bar.repeat(1000, respond_to_state)
+        self.light_cond.repeat(1000, respond_to_state)
 
     def display_theme(self, displayed_theme):  
         self.change_color(displayed_theme.light)
@@ -225,9 +227,6 @@ class Infos:
     # Attributes : self.light, self.emotion, self.turbulence
     def __init__(self, time_idx, prev_turbulences=None):
         # Read in light data
-        import board
-        import busio
-        import adafruit_tsl2591
         # Initialize the I2C bus.
         i2c = busio.I2C(board.SCL, board.SDA)
         # Initialize the sensor.
