@@ -1,15 +1,16 @@
 
 from user import *
 from theme import *
+from guizero import *
 import time
 
 NEW_USER_COMMAND = 'NEW USER'
 SKIP_COMMAND = 'SKIP'
 
-"""
+'''
 The agent User uses to interact with the system.
 This is a terminal agent for test purpose.
-"""
+'''
 class Agent:
 
     user = None
@@ -53,7 +54,7 @@ class Agent:
         user.set_preference(updated_preference)
 
     # TODO: settle on a way to implement delayed override
-    # This is a "creative" solution. I know. But it's much simpler than many other solutions
+    # This is a 'creative' solution. I know. But it's much simpler than many other solutions
     def wait_for_override_input(self, text):
         sleep_time = 8
         print(text)
@@ -129,9 +130,9 @@ class Agent:
         return input()
 
     def capture_new_user_info(self):
-        _username = self.ask_and_expect_typed_response("Please type your username.")
+        _username = self.ask_and_expect_typed_response('Please type your username.')
         # UI should use smarter birthday input, so we don't waste time on implementing birthday check here
-        _birthday = self.ask_and_expect_typed_response("Please type your birthday.")
+        _birthday = self.ask_and_expect_typed_response('Please type your birthday.')
         return _username, User.Info({ birthday: _birthday })
 
     def display_error_msg(self, msg):
@@ -150,7 +151,90 @@ class Agent:
 
 
 class GUIAgent(Agent):
-    def __init__(self, username, theme):
-        user_created, error_msg = User.create_new_user(self, username, User.Info())
-        self.user = user_created
-        self.user.set_preference({'global_theme':theme})
+
+    def __init__(self, session):
+        # user_created, error_msg = User.create_new_user(self, username, User.Info())
+        # self.user = user_created
+        # self.user.set_preference({'global_theme':theme})
+        self.app = session.app
+        self.session = session
+        self.window = self.wait_for_user_session()
+
+    def user_login(self):
+        if self.pending_user:
+            self.await_session_window.destroy()
+            self.user = User.login(self, self.pending_user)
+            self.session.on_login_complete()
+
+    def create_new_user(self):
+        if self.pending_theme and self.pending_new_user:
+            user_created, _ = User.create_new_user(self, self.pending_new_user, User.Info({ preference: { global_theme: self.pending_theme } }))
+            if user_created:
+                self.user = user_created
+                self.new_user_window.destroy()
+                self.session.on_login_complete()
+            else:
+                self.duplicate_user_err.visible = True
+
+    def new_user_page(self):
+        self.await_session_window.destroy()
+        window = Window(self.app, title='Create New Avia-X User', height = 200, width = 400)
+
+        self.pending_user = None
+        def set_pending_new_user(username):
+            self.pending_new_user = username
+
+        Box(window, height=25, width='fill')
+
+        title_box = Box(window, height=30, width=235)
+        Text(title_box, text='Enter Your Username', align='left')
+        TextBox(title_box, command=set_pending_new_user, align='right')
+        err_box = Box(window, height=20, width='fill')
+        
+        self.duplicate_user_err = Text(err_box, text='Username Used', color='red', size=9, align='bottom', visible=False)
+
+        Box(window, height=20, width='fill')
+        self.pending_theme = None
+        def set_pending_theme(theme_name):
+            self.pending_theme = theme_name
+
+        theme_box = Box(window, height=20, width=235)
+        Text(theme_box, text = 'Pick a Theme', align='left')
+        Combo(theme_box, command=set_pending_theme, options=name_to_global_theme.keys(), align='right')
+
+        Box(window, height=20, width='fill')
+        PushButton(window, command=self.create_new_user, text='Create and Login')
+
+        self.new_user_window = window
+
+    def wait_for_user_session(self):
+        current_user_data = user_database.find()
+        existing_users = []
+        if current_user_data:
+            existing_users = [username for (username, data) in current_user_data.items()]
+
+        self.pending_user = None
+        def set_pending_user(username):
+            self.pending_user = username
+
+        window = Window(self.app, title='User System', height=200, width=400, bg='black')
+
+        title_box = Box(window, height=40, width='fill')
+        Text(title_box, text="Who's Flying?", align='bottom', color = 'white')
+
+        Box(window, height=30, width='fill')
+
+        username_box = Box(window, height=40, width=235)
+        Text(username_box, text='Username', color = 'white', align='left')
+        username = Combo(username_box, command=set_pending_user, options=existing_users, align='right')
+        username.text_color = 'white'
+
+        Box(window, height=20, width='fill')
+
+        button_box = Box(window, height=40, width=160)
+        login = PushButton(button_box, pady=0, padx=0, command = self.user_login, text = 'Login', align='left')
+        login.text_color = 'white'
+        newuser = PushButton(button_box, pady=0, padx=0, command = self.new_user_page, text = 'create new user', align='right')
+        newuser.text_color = 'white'
+
+        self.await_session_window = window
