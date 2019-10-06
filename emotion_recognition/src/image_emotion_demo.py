@@ -5,8 +5,8 @@ import atexit
 import cv2
 from keras.models import load_model
 import numpy as np
-# import picamera
-# import picamera.array
+import picamera
+import picamera.array
 from emotion_recognition.src import utils
 from emotion_recognition.src.utils.datasets import get_labels
 from emotion_recognition.src.utils.inference import detect_faces
@@ -31,10 +31,14 @@ emotion_classifier = load_model(emotion_model_path, compile=False)
 # getting input model shapes for inference
 emotion_target_size = emotion_classifier.input_shape[1:3]
 # gender_target_size = gender_classifier.input_shape[1:3]
-
-camera = cv2.VideoCapture(0)
-if not camera.isOpened():
-    raise Exception("Could not open video device")
+#init cam
+camera = picamera.PiCamera()
+camera.resolution = (1024, 768)
+camera.rotation = 180
+#camera.start_preview()
+# camera = cv2.VideoCapture(0)
+# if not camera.isOpened():
+#     raise Exception("Could not open video device")
 
 def main_predict():
     # gender_labels = get_labels('imdb')
@@ -46,16 +50,12 @@ def main_predict():
     emotion_offsets = (20, 40)
     emotion_offsets = (0, 0)
 
-    # init cam
-    # camera = picamera.PiCamera()
-    # camera.resolution = (1024, 768)
-    # camera.rotation = 180
-    # camera.start_preview()
+
 
     # handle exit
     def onStop():
-        # camera.stop_preview()
-        camera.release()
+       # camera.stop_preview()
+        #camera.release()
         print("Shutdown")
         sys.exit()
 
@@ -76,13 +76,13 @@ def main_predict():
         print("New iter")
         start = time()
         # take image
-        # with picamera.array.PiRGBArray(camera) as stream:
-        #     camera.capture(stream, format='rgb')
-        #     # At this point the image is available as stream.array
-        #     image = stream.array
-        ret, frame = camera.read()
-        cv2.imshow("origin", frame)
-        image = frame[:, :, ::-1]  # BGR -> RGB
+        with picamera.array.PiRGBArray(camera) as stream:
+            camera.capture(stream, format='rgb')
+            # At this point the image is available as stream.array
+            image = stream.array
+        # ret, frame = camera.read()
+        cv2.imshow("origin", image)
+        # image = frame[:, :, ::-1]  # BGR -> RGB
 
         # loading images
         rgb_image = image  # load_image(image_path, grayscale=False)
