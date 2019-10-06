@@ -7,7 +7,9 @@ from guizero import *
 import pygame
 import time
 import os
-
+import board
+import busio
+import adafruit_tsl2591
 RESET = "reset"
 
 class Session:
@@ -48,7 +50,7 @@ class GUISession(Session):
     warm_color = (255, 231, 211)
     bright_color = (255, 250, 229)
     color_dict = {'red': (243,115,54), 'yellow': (247,204,59) }
-    time_idx = 0
+    idx = 0
 
     def __init__(self):
         super().__init__()
@@ -114,6 +116,7 @@ class GUISession(Session):
         # Info Window
         self.info = Window(self.app, title="Avia-X is running", visible = False)
         # Display Environment Info
+        Text(self.create_new, text="On Boarding", grid=[0,0], align="left")
         self.agent_name = Text(self.info, align = "top", width = "fill")
         self.trigger_box = Text(self.info, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
         
@@ -143,7 +146,7 @@ class GUISession(Session):
             self.update_state()
             self.handle_state(self.state)
 
-        self.output_bar.repeat(1000, respond_to_state)
+        self.light_cond.repeat(1000, respond_to_state)
 
     def display_theme(self, displayed_theme):  
         self.change_color(displayed_theme.light)
@@ -224,15 +227,13 @@ class Infos:
     # Attributes : self.light, self.emotion, self.turbulence
     def __init__(self, time_idx, prev_turbulences=None):
         # Read in light data
-        import board
-        import busio
-        import adafruit_tsl2591
         # Initialize the I2C bus.
         i2c = busio.I2C(board.SCL, board.SDA)
         # Initialize the sensor.
         sensor = adafruit_tsl2591.TSL2591(i2c)
         self.light = sensor.lux
-
+        self.prev_turbulences = prev_turbulences
+        
         # Facial Expression
         facial_expr = main_predict()
         if facial_expr == None:
@@ -244,16 +245,16 @@ class Infos:
         with open('example.csv') as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             row = readCSV[time_idx]
-            if prev_turbulences:
-                if len(prev_turbulences) == 5: # TODO could edit for more effects
-                    prev_turbulences.pop(0)
-                prev_turbulences.append(row[1])
-                if all([True if abs(t) > 500 else False for t in prev_turbulences]):
+            if self.prev_turbulences:
+                if len(self.prev_turbulences) == 5: # TODO could edit for more effects
+                    self.prev_turbulences.pop(0)
+                self.prev_turbulences.append(row[1])
+                if all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
                     self.turbulence = False
                 else:
                     self.turbulence = True
             else:
-                prev_turbulences = [row[1]]
+                self.prev_turbulences = [row[1]]
                 self.turbulence = abs(row[1]) > 1000
                 # print(self.turbulence)
         self.prev_turbulences = prev_turbulences
