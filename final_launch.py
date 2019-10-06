@@ -232,7 +232,8 @@ class Infos:
         # Initialize the sensor.
         sensor = adafruit_tsl2591.TSL2591(i2c)
         self.light = sensor.lux
-
+        self.prev_turbulences = prev_turbulences
+        
         # Facial Expression
         facial_expr = main_predict()
         if facial_expr == None:
@@ -244,16 +245,16 @@ class Infos:
         with open('example.csv') as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             row = readCSV[time_idx]
-            if prev_turbulences:
-                if len(prev_turbulences) == 5: # TODO could edit for more effects
-                    prev_turbulences.pop(0)
-                prev_turbulences.append(row[1])
-                if all([True if abs(t) > 500 else False for t in prev_turbulences]):
+            if self.prev_turbulences:
+                if len(self.prev_turbulences) == 5: # TODO could edit for more effects
+                    self.prev_turbulences.pop(0)
+                self.prev_turbulences.append(row[1])
+                if all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
                     self.turbulence = False
                 else:
                     self.turbulence = True
             else:
-                prev_turbulences = [row[1]]
+                self.prev_turbulences = [row[1]]
                 self.turbulence = abs(row[1]) > 1000
                 # print(self.turbulence)
         self.prev_turbulences = prev_turbulences
