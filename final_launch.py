@@ -50,7 +50,7 @@ class GUISession(Session):
     warm_color = (255, 231, 211)
     bright_color = (255, 250, 229)
     color_dict = {'red': (243,115,54), 'yellow': (247,204,59) }
-    time_idx = 0
+    idx = 0
 
     def __init__(self):
         super().__init__()
