@@ -210,14 +210,14 @@ class GUISession(Session):
     def update_state(self):
         # state = {turbulence: 1 , luminance : 3, theme: None}
         self.idx += 1
-        if self.state[prev_turbulences]:
-            self.all_infos = Infos(self.idx, self.state[prev_turbulences])
+        if self.prev_turbulences:
+            self.all_infos = Infos(self.idx, self.prev_turbulences)
         else:
             self.all_infos = Infos(self.idx)
         self.state[turbulence] = self.all_infos.turbulence
         self.state[luminance] = self.all_infos.light
         self.state[emotion] = self.all_infos.emotion
-        self.state[prev_turbulences] = self.all_infos.prev_turbulences
+        self.prev_turbulences = self.all_infos.prev_turbulences
 
 
 class Infos:
