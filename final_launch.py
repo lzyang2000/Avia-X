@@ -48,6 +48,8 @@ class GUISession(Session):
     warm_color = (255, 231, 211)
     bright_color = (255, 250, 229)
     color_dict = {'red': (243,115,54), 'yellow': (247,204,59) }
+    time_idx = 0
+
     def __init__(self):
         super().__init__()
         
@@ -205,6 +207,58 @@ class GUISession(Session):
 
     def gather_state(self):
         return self.state
+
+    def update_state(self):
+        # state = {turbulence: 1 , luminance : 3, theme: None}
+        self.idx += 1
+        if self.state[prev_turbulences]:
+            self.all_infos = Infos(self.idx, self.state[prev_turbulences])
+        else:
+            self.all_infos = Infos(self.idx)
+        self.state[turbulence] = self.all_infos.turbulence
+        self.state[luminance] = self.all_infos.light
+        self.state[emotion] = self.all_infos.emotion
+        self.state[prev_turbulences] = self.all_infos.prev_turbulences
+
+
+class Infos:
+    # Attributes : self.light, self.emotion, self.turbulence
+    def __init__(self, time_idx, prev_turbulences=None):
+        # Read in light data
+        import board
+        import busio
+        import adafruit_tsl2591
+        # Initialize the I2C bus.
+        i2c = busio.I2C(board.SCL, board.SDA)
+        # Initialize the sensor.
+        sensor = adafruit_tsl2591.TSL2591(i2c)
+        self.light = sensor.lux
+
+        # Facial Expression
+        facial_expr = main_predict()
+        if facial_expr == None:
+            self.emotion = "neutral"
+        self.emotion = facial_expr
+
+        # Turbulence
+        import csv
+        with open('example.csv') as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+            row = readCSV[time_idx]
+            if prev_turbulences:
+                if len(prev_turbulences) == 5: # TODO could edit for more effects
+                    prev_turbulences.pop(0)
+                prev_turbulences.append(row[1])
+                if all([True if abs(t) > 500 else False for t in prev_turbulences]):
+                    self.turbulence = False
+                else:
+                    self.turbulence = True
+            else:
+                prev_turbulences = [row[1]]
+                self.turbulence = abs(row[1]) > 1000
+                # print(self.turbulence)
+        self.prev_turbulences = prev_turbulences
+
 
 def main():
     session = GUISession()
