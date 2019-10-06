@@ -112,6 +112,7 @@ class GUISession(Session):
         # Info Window
         self.info = Window(self.app, title="Avia-X is running", visible = False)
         # Display Environment Info
+        Text(self.create_new, text="On Boarding", grid=[0,0], align="left")
         self.agent_name = Text(self.info, align = "top", width = "fill")
         self.trigger_box = Text(self.info, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
         
