@@ -4,7 +4,7 @@ from theme import *
 import time                            #calling time to provide delays in program
 
 quite_color = [47, 40, 0]   
-engaged_color = [47, 42, 0]
+engaged_color = [47, 0, 42]
 normal_color = [10, 14, 50]
 warm_color = [1, 1, 49]
 predefined_themes = {quiet:quite_color, engaged:engaged_color, normal:normal_color,warm:warm_color}
@@ -52,4 +52,5 @@ def change_color(theme):
     red_2.start(r)
     red_3.start(r)
 
-change_color(quiet)
+change_color(engaged)
+IO.cleanup()

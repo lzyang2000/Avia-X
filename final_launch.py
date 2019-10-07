@@ -1,4 +1,4 @@
-# from emotion_recognition.src.image_emotion_demo import *
+from emotion_recognition.src.image_emotion_demo import *
 from mock_agent import *
 from user import *
 from theme import *
