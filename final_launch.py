@@ -241,7 +241,7 @@ class Infos:
 
         # Turbulence
         import csv
-        with open('example.csv') as csvfile:
+        with open('Daher_Turbulence_data.csv') as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             row = readCSV[time_idx]
             if self.prev_turbulences:
