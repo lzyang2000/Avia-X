@@ -138,8 +138,8 @@ class GUISession(Session):
     # Main functions
     def run(self):
         self.info.visible=True
-        new_agent = GUIAgent(self.username.value, self.chosen_theme)
-        self.new_agent_login(new_agent)
+        # new_agent = GUIAgent(self.username.value, self.chosen_theme)
+        # self.new_agent_login(new_agent)
 
         def respond_to_state():
             self.update_state()
