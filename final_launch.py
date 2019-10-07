@@ -212,7 +212,7 @@ class GUISession(Session):
     def update_state(self):
         # state = {turbulence: 1 , luminance : 3, theme: None}
         self.idx += 1
-        if self.prev_turbulences:
+        if hasattr(self, 'prev_turbulences'):
             self.all_infos = Infos(self.idx, self.prev_turbulences)
         else:
             self.all_infos = Infos(self.idx)
