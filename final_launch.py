@@ -142,13 +142,6 @@ class GUISession(Session):
         self.new_agent_login(new_agent)
 
         def respond_to_state():
-
-B
-B
-A
-B
- 
-            
             self.update_state()
             self.handle_state(self.state)
 
