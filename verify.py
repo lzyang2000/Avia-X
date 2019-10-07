@@ -21,3 +21,4 @@ except KeyboardInterrupt:
     pass
 finally:
     GPIO.cleanup()
+

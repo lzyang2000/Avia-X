@@ -57,6 +57,7 @@ def main_predict():
        # camera.stop_preview()
         #camera.release()
         print("Shutdown")
+        GPIO.cleanup()
         sys.exit()
 
 
