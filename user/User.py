@@ -43,6 +43,10 @@ class User:
     def get_preference(self):
         return self.info.preference
 
+    # Most commonly used
+    def get_global_theme_preference(self):
+        return self.info.preference[global_theme]
+
     def set_preference(self, updated_preference):
         for (theme, setting) in updated_preference.items():
             if not setting == self.info.preference[theme]:

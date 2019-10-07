@@ -28,14 +28,14 @@ class Session:
     # def gather_state(self):
     #     return {turbulence: 85, luminance: 3, emotion:"neutral" }
 
-    # def handle_state(self, state):
-    #     global_triggers = {}
-    #     for rule in adjustment_rules:
-    #         trigger_result = rule.trigger(state)
-    #         if trigger_result:
-    #             if rule.is_global:
-    #                 global_triggers.update({rule.name: trigger_result })
-    #     self.handle_global_triggers(global_triggers)
+    def handle_state(self, state):
+        global_triggers = {}
+        for rule in adjustment_rules:
+            trigger_result = rule.trigger(state)
+            if trigger_result:
+                if rule.is_global:
+                    global_triggers.update({rule.name: trigger_result })
+        self.handle_global_triggers(global_triggers)
 
 
     # # TODO: discuss how to override a global rule trigger
@@ -44,11 +44,11 @@ class Session:
 
 class GUISession(Session):
 
-    # state = {turbulence: 1 , luminance : 3, theme: None}
+    state = { turbulence: 1 , luminance : 3, 'prev_turbulences': None, theme: None }
     # warm_color = (255, 231, 211)
     # bright_color = (255, 250, 229)
     # color_dict = {'red': (243,115,54), 'yellow': (247,204,59) }
-    # time_idx = 0
+    idx = 0
 
     def __init__(self):
 
@@ -70,22 +70,6 @@ class GUISession(Session):
         #         new_light = self.color_dict[customized_light]
         #     self.agents[0].customize_theme(prev_theme, { light: new_light })
         #     self.change_color(new_light)
-
-        # def ask_theme():
-        #     self.theme_text.visible = True
-        #     self.all_themes.visible = True
-
-        # def custom_theme(custom_theme):
-        #     self.chosen_theme = custom_theme
-
-        # def user_login():
-        #     self.info.visible = True
-        #     return
-
-        # def user_create():
-        #     self.create_new.visible = True
-        #     self.app.hide()
-        #     return
  
         # # Info Window
         # self.info = Window(self.app, title="Avia-X is running", visible = False)
@@ -97,7 +81,6 @@ class GUISession(Session):
 
         # # Display Theme Info
         # self.light_cond = Text(self.info, align = "left", width = "fill")
-        
 
         # # adding a temporary "reset" option as proof of concept
         # self.customize_light_menu = Combo(self.info, command=customize_light, options=list(self.color_dict.keys()) + [RESET], align="bottom",width="fill")
@@ -109,46 +92,57 @@ class GUISession(Session):
         app = self.app
         welcome_box = Box(app, height=40, width='fill')
         Text(welcome_box, text='Welcome aboard, {}!'.format(self.agent.user.username), align='bottom')
+        self.display_theme(self.agent.retrieve_theme(self.agent.user.get_global_theme_preference()), from_login=True)
+        self.agent.create_interface()
+        self.run()
 
     # Main functions
-#     def run(self):
-#         self.info.visible=True
-#         new_agent = GUIAgent(self.username.value, self.chosen_theme)
-#         self.new_agent_login(new_agent)
-
-#         def respond_to_state():
+    def run(self):
+        def respond_to_state():
             
-#             self.update_state()
-#             self.handle_state(self.state)
+            self.update_state()
+            self.handle_state(self.state)
 
-#         self.output_bar.repeat(1000, respond_to_state)
+        self.app.repeat(1000, respond_to_state)
 
-#     def display_theme(self, displayed_theme):  
-#         self.change_color(displayed_theme.light)
-#         self.play_album(displayed_theme.music)
-#         self.trigger_box.value = "Theme:" + displayed_theme.name
-#         self.state[theme] = displayed_theme.name
+    def display_theme(self, displayed_theme, from_login=False):
+        if from_login:
+            self.app.bg = displayed_theme.light
+        else:
+            self.set_theme_light(displayed_theme.light)
+        # self.play_album(displayed_theme.music)
+        # self.trigger_box.value = "Theme:" + displayed_theme.name
+        self.state[theme] = displayed_theme.name
 
-#     def handle_global_triggers(self, triggers):
-#         print(self.state)
-#         print(triggers)
+    def set_theme_light(self, light):
+        self.app.bg = light
+        self.agent.control_panel.bg = None
 
-#         if not triggers:
-#             return
+    # Maps a state to a theme
+    def handle_state(self, state):
+        pass
 
-#         all_updates = {}
-#         for val in triggers.values():
-#             all_updates.update(val)
+    def handle_global_triggers(self, triggers):
+        print(self.state)
+        print(triggers)
+        pass
 
-#         # anything that uses #self.agents[0] should consider multiple agents
-#         if safety_belt_warning in all_updates:
-#             self.trigger_box.value = "Please Fasten your Belt"
-#         if theme in all_updates:
-#             theme_name = all_updates[theme]
-#             if theme_name == 'preference':
-#                 theme_name = self.agents[0].user.info.preference['global_theme']
-#             updated_theme = self.agents[0].retrieve_theme(theme_name)
-#             self.display_theme(updated_theme)
+        # if not triggers:
+        #     return
+
+        # all_updates = {}
+        # for val in triggers.values():
+        #     all_updates.update(val)
+
+        # # anything that uses #self.agents[0] should consider multiple agents
+        # if safety_belt_warning in all_updates:
+        #     self.trigger_box.value = "Please Fasten your Belt"
+        # if theme in all_updates:
+        #     theme_name = all_updates[theme]
+        #     if theme_name == 'preference':
+        #         theme_name = self.agents[0].user.info.preference['global_theme']
+        #     updated_theme = self.agents[0].retrieve_theme(theme_name)
+        #     self.display_theme(updated_theme)
 
 
 #     # Helper Functions
@@ -160,9 +154,6 @@ class GUISession(Session):
 #         self.display_theme(theme_to_display)
 
 #         self.agent_name.value = ''.join([agent.user.username for agent in self.agents])
-
-#     def change_color(self,color):
-#         self.app.bg = color
 
 #     def play_album(self, path):
 #         if not path:
@@ -179,17 +170,16 @@ class GUISession(Session):
 #     def gather_state(self):
 #         return self.state
 
-#     def update_state(self):
-#         # state = {turbulence: 1 , luminance : 3, theme: None}
-#         self.idx += 1
-#         if self.state[prev_turbulences]:
-#             self.all_infos = Infos(self.idx, self.state[prev_turbulences])
-#         else:
-#             self.all_infos = Infos(self.idx)
-#         self.state[turbulence] = self.all_infos.turbulence
-#         self.state[luminance] = self.all_infos.light
-#         self.state[emotion] = self.all_infos.emotion
-#         self.state[prev_turbulences] = self.all_infos.prev_turbulences
+    def update_state(self):
+        self.idx += 1
+        # if self.state['prev_turbulences']:
+        #     self.all_infos = Infos(self.idx, self.state['prev_turbulences'])
+        # else:
+        #     self.all_infos = Infos(self.idx)
+        # self.state[turbulence] = self.all_infos.turbulence
+        # self.state[luminance] = self.all_infos.light
+        # self.state[emotion] = self.all_infos.emotion
+        # self.state['prev_turbulences'] = self.all_infos.prev_turbulences
 
 
 # class Infos:
@@ -233,9 +223,6 @@ class GUISession(Session):
 
 def main():
     session = GUISession()
-    # agent = Agent()
-    # session.new_agent_login(agent)
-    # session.run()
 
 if __name__ == '__main__':
     main()

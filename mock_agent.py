@@ -6,6 +6,7 @@ import time
 
 NEW_USER_COMMAND = 'NEW USER'
 SKIP_COMMAND = 'SKIP'
+RESET = 'reset'
 
 '''
 The agent User uses to interact with the system.
@@ -152,6 +153,8 @@ class Agent:
 
 class GUIAgent(Agent):
 
+    color_dict = { 'red': (243,115,54), 'yellow': (247,204,59) }
+
     def __init__(self, session):
         # user_created, error_msg = User.create_new_user(self, username, User.Info())
         # self.user = user_created
@@ -167,8 +170,9 @@ class GUIAgent(Agent):
             self.session.on_login_complete()
 
     def create_new_user(self):
-        if self.pending_theme and self.pending_new_user:
-            user_created, _ = User.create_new_user(self, self.pending_new_user, User.Info({ preference: { global_theme: self.pending_theme } }))
+        pending_new_user = self.username_input.value
+        if self.pending_theme and pending_new_user:
+            user_created, _ = User.create_new_user(self, pending_new_user, User.Info({ preference: { global_theme: self.pending_theme } }))
             if user_created:
                 self.user = user_created
                 self.new_user_window.destroy()
@@ -180,20 +184,16 @@ class GUIAgent(Agent):
         self.await_session_window.destroy()
         window = Window(self.app, title='Create New Avia-X User', height = 200, width = 400)
 
-        self.pending_user = None
-        def set_pending_new_user(username):
-            self.pending_new_user = username
-
         Box(window, height=25, width='fill')
 
         title_box = Box(window, height=30, width=235)
         Text(title_box, text='Enter Your Username', align='left')
-        TextBox(title_box, command=set_pending_new_user, align='right')
+        self.username_input = TextBox(title_box, align='right')
         err_box = Box(window, height=20, width='fill')
         
         self.duplicate_user_err = Text(err_box, text='Username Used', color='red', size=9, align='bottom', visible=False)
 
-        Box(window, height=20, width='fill')
+        Box(window, height=10, width='fill')
         self.pending_theme = None
         def set_pending_theme(theme_name):
             self.pending_theme = theme_name
@@ -238,3 +238,80 @@ class GUIAgent(Agent):
         newuser.text_color = 'white'
 
         self.await_session_window = window
+
+    def customize_light_from_command(self, command):
+        theme_name = self.current_theme_obj.name
+        if command == RESET:
+            new_light = name_to_theme[theme_name].light
+        else:
+            new_light = self.color_dict[command]
+        self.customize_theme(self.current_theme_obj, { light: new_light })
+        self.current_theme_obj = self.retrieve_theme(theme_name)
+        self.update_light_sliders()
+        self.session.display_theme(self.current_theme_obj)
+
+    def customize_light_from_rgb(self):
+        theme_name = self.current_theme_obj.name
+        self.customize_theme(self.current_theme_obj, { light: (self.R, self.G, self.B) })
+        self.current_theme_obj = self.retrieve_theme(theme_name)
+        self.update_light_sliders()
+        self.session.display_theme(self.current_theme_obj)
+
+    def update_light_sliders(self):
+        self.R, self.G, self.B = self.current_theme_obj.light
+        self.R_slider.value, self.G_slider.value, self.B_slider.value = str(self.R), str(self.G), str(self.B)
+
+    def create_interface(self):
+        width, height = 600, 500
+        window = Window(self.app, title='Avia-X Mock Control', height=height, width=width, layout='grid')
+        self.control_panel = window
+        welcome_box = Box(window, height=50, width=width, grid=[0,0,12,1])
+        Text(welcome_box, text='Welcome Aboard, {}!'.format(self.user.username), size=16, align='bottom')
+
+        Box(window, height=35, width=width, grid=[0,1,12,1])
+
+        customize_theme_title_box = Box(window, height=50, width=width // 2, grid=[0,2,6,1])
+        Text(customize_theme_title_box, text='Customize Theme', size=14, align='top')
+        current_theme_name = self.user.get_global_theme_preference()
+        self.current_theme_text = Text(customize_theme_title_box, text='Current Theme: {}'.format(current_theme_name), size=9, align='top')
+
+        theme_light_box = Box(window, height=60, width=width // 3, grid=[1,3,4,1]) # x = 1,2,3,4
+        Text(theme_light_box, text='Theme Light   ', align='left')
+        Combo(theme_light_box, command=self.customize_light_from_command, options=list(self.color_dict.keys()) + [RESET], align='right')
+
+        theme_light_custom_title_box = Box(window, height=40, width=width // 3, grid=[1,4,4,1]) # x = 1,2,3,4
+        Text(theme_light_custom_title_box, text='Custom Light')
+        
+        def set_R(r_val):
+            self.R = int(r_val)
+            self.customize_light_from_rgb()
+
+        def set_G(g_val):
+            self.G = int(g_val)
+            self.customize_light_from_rgb()
+
+        def set_B(b_val):
+            self.B = int(b_val)
+            self.customize_light_from_rgb()
+
+        self.current_theme_obj = self.retrieve_theme(current_theme_name)
+
+        R_box = Box(window, height=120, width=width // 6, grid=[1,5])
+        self.R_slider = Slider(R_box, start=0, end=255, command=set_R, horizontal=False, width=20, height=100, align='top')
+        Text(R_box, text='     R', align='bottom')
+
+        self.G = 0
+        G_box = Box(window, height=120, width=width // 6, grid=[2,5,2,1])
+        self.G_slider = Slider(G_box, start=0, end=255, command=set_G, horizontal=False, width=20, height=100, align='top')
+        Text(G_box, text='     G', align='bottom')
+
+        self.B = 0
+        B_box = Box(window, height=120, width=width // 6, grid=[4,5])
+        self.B_slider = Slider(B_box, start=0, end=255, command=set_B, horizontal=False, width=20, height=100, align='top')
+        Text(B_box, text='     B', align='bottom')
+
+        self.update_light_sliders()
+
+        set_preference_title_box = Box(window, height=50, width=width // 2, grid=[6,2,6,1])
+        Text(set_preference_title_box, text='Set Preference', size=14, align='top')
+
