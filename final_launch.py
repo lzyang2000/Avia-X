@@ -245,7 +245,10 @@ class Infos:
             readCSV = csv.reader(csvfile, delimiter=',')
             row = [line for idx, line in enumerate(readCSV) if idx == time_idx]
             row = row[0]
-            print(row)
+            # print(row)
+            row[1] = int(row[1])
+            row[2] = int(row[2])
+            row[3] = int(row[3])
             # row = readCSV[time_idx]
             if self.prev_turbulences:
                 if len(self.prev_turbulences) == 5: # TODO could edit for more effects
