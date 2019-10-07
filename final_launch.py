@@ -253,8 +253,9 @@ class Infos:
             if self.prev_turbulences:
                 if len(self.prev_turbulences) == 5: # TODO could edit for more effects
                     self.prev_turbulences.pop(0)
-                self.prev_turbulences.append(row[1])
-                if all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
+                self.prev_turbulences.append(abs(row[1]))
+                if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
+                # all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
                     self.turbulence = False
                 else:
                     self.turbulence = True
