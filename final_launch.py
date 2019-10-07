@@ -13,7 +13,7 @@ import adafruit_tsl2591
 import csv
 import RPi.GPIO as GPIO
 RESET = "reset"
-GPIO_pin = 4
+GPIO_pin = 4 #Pressure Pin
 
 
 GPIO.setmode(GPIO.BCM)
