@@ -261,6 +261,12 @@ class GUIAgent(Agent):
         self.R, self.G, self.B = self.current_theme_obj.light
         self.R_slider.value, self.G_slider.value, self.B_slider.value = str(self.R), str(self.G), str(self.B)
 
+    def update_preferred_theme(self, new_theme_name):
+        self.user.set_preference({ global_theme: new_theme_name })
+        self.current_theme_obj = self.retrieve_theme(new_theme_name)
+        self.update_light_sliders()
+        self.session.display_theme(self.current_theme_obj)
+
     def create_interface(self):
         width, height = 600, 500
         window = Window(self.app, title='Avia-X Mock Control', height=height, width=width, layout='grid')
@@ -279,7 +285,7 @@ class GUIAgent(Agent):
         Text(theme_light_box, text='Theme Light   ', align='left')
         Combo(theme_light_box, command=self.customize_light_from_command, options=list(self.color_dict.keys()) + [RESET], align='right')
 
-        theme_light_custom_title_box = Box(window, height=40, width=width // 3, grid=[1,4,4,1]) # x = 1,2,3,4
+        theme_light_custom_title_box = Box(window, height=40, width=width // 2, grid=[0,4,6,1])
         Text(theme_light_custom_title_box, text='Custom Light')
         
         def set_R(r_val):
@@ -312,6 +318,16 @@ class GUIAgent(Agent):
 
         self.update_light_sliders()
 
+        theme_music_title_box = Box(window, height=40, width=width // 2, grid=[0,6,6,1])
+        Text(theme_music_title_box, text='Music', align='bottom')
+
         set_preference_title_box = Box(window, height=50, width=width // 2, grid=[6,2,6,1])
         Text(set_preference_title_box, text='Set Preference', size=14, align='top')
 
+        switch_theme_box = Box(window, height=60, width=width // 2, grid=[6,3,6,1]) # x = 6,7,8,9,10,11
+        Text(switch_theme_box, text='      Switch Theme', align='left')
+        Text(switch_theme_box, text='      ', align='right')
+        Combo(switch_theme_box, command=self.update_preferred_theme, options=name_to_global_theme.keys(), align='right')
+
+        set_config_title_box = Box(window, height=40, width=width // 2, grid=[6,4,6,1])
+        Text(set_config_title_box, text='Rule Config')
