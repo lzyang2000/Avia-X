@@ -51,6 +51,6 @@ def change_color(theme):
     red_1.start(r)
     red_2.start(r)
     red_3.start(r)
-
-change_color(engaged)
-IO.cleanup()
+if __name__ == "__main__":
+    change_color(normal)
+    #IO.cleanup()#turn lights off
