@@ -62,24 +62,16 @@ class GUISession(Session):
 
     def __init__(self):
 
+        pygame.mixer.init()
+        self.curr_music = None
         app = App(title="Avia-X is running")
         self.app = app
         self.agent = GUIAgent(self)
-        
+
         # self.agent_name = Text(app, align = "top", width = "fill")
         # self.trigger_box = Text(app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
         # self.text_turbulence = Text(self.app, text="Getting Turbulence", align="left")
         # self.text_lumi = Text(self.app, text="Getting Luminance", align="left")
-        
-        # pygame.mixer.init()
-
-        # def customize_light(customized_light):
-        #     prev_theme = self.agents[0].retrieve_theme(self.state[theme])
-        #     new_light = name_to_theme[self.state[theme]].light
-        #     if not customized_light == RESET:
-        #         new_light = self.color_dict[customized_light]
-        #     self.agents[0].customize_theme(prev_theme, { light: new_light })
-        #     self.change_color(new_light)
  
         # # Info Window
         # self.info = Window(self.app, title="Avia-X is running", visible = False)
@@ -92,18 +84,14 @@ class GUISession(Session):
         # # Display Theme Info
         # self.light_cond = Text(self.info, align = "left", width = "fill")
 
-        # # adding a temporary "reset" option as proof of concept
-        # self.customize_light_menu = Combo(self.info, command=customize_light, options=list(self.color_dict.keys()) + [RESET], align="bottom",width="fill")
-        # self.text_customize_light = Text(self.info, text="Customize Light for this theme", align="bottom", width = "fill")
-
         self.app.display()
 
     def on_login_complete(self):
         app = self.app
         welcome_box = Box(app, height=40, width='fill')
         Text(welcome_box, text='Welcome aboard, {}!'.format(self.agent.user.username), align='bottom')
-        self.display_theme(self.agent.retrieve_theme(self.agent.user.get_global_theme_preference()), from_login=True)
         self.agent.create_interface()
+        self.display_theme(self.agent.retrieve_theme(self.agent.user.get_global_theme_preference()))
         self.run()
 
     # Main functions
@@ -114,15 +102,12 @@ class GUISession(Session):
 
         self.app.repeat(1000, respond_to_state)
 
-    def display_theme(self, displayed_theme, from_login=False):
-        if from_login:
-            self.app.bg = displayed_theme.light
-        else:
-            self.set_theme_light(displayed_theme.light)
-        # self.play_album(displayed_theme.music)
+    def display_theme(self, displayed_theme):
+        self.set_theme_light(displayed_theme.light)
+        self.play_music(displayed_theme.music)
         # self.trigger_box.value = "Theme:" + displayed_theme.name
         self.state[theme] = displayed_theme.name
-        
+
     def display_state(self):
         self.text_emotion = "Emotion:" + self.state[emotion]
         self.text_lumi = "Luminance:" + self.state[luminance]
@@ -132,6 +117,23 @@ class GUISession(Session):
     def set_theme_light(self, light):
         self.app.bg = light
         self.agent.control_panel.bg = None
+
+    def set_music_volume(self, vol):
+        pygame.mixer.music.set_volume(int(vol) * 1.00 / 100)
+
+    def play_music(self, path):
+        if not path:
+            pygame.mixer.music.stop()
+            return 
+        path_to_album = './theme/assets/' + path
+        if self.curr_music == path_to_album:
+            return
+        music_files = os.listdir(path_to_album)
+        if music_files:
+            music_file = path_to_album + '/' + music_files[0]
+            pygame.mixer.music.load(music_file)
+            pygame.mixer.music.play(-1)
+            self.curr_music = path_to_album
 
     # Maps a state to a theme
     def handle_state(self, state):
@@ -169,18 +171,6 @@ class GUISession(Session):
 #         self.display_theme(theme_to_display)
 
 #         self.agent_name.value = ''.join([agent.user.username for agent in self.agents])
-
-#     def play_album(self, path):
-#         if not path:
-#             return
-#         path_to_album = './theme/assets/' + path
-#         music_files = os.listdir(path_to_album)
-#         if music_files:
-#             music_file = path_to_album + '/' + music_files[0]
-#             pygame.mixer.music.load(music_file)
-#             pygame.mixer.music.play()
-#             # playsound(path_to_album + '/' + music_files[0], False)
-        
 
 #     def gather_state(self):
 #         return self.state

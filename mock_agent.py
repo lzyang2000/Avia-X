@@ -7,6 +7,7 @@ import time
 NEW_USER_COMMAND = 'NEW USER'
 SKIP_COMMAND = 'SKIP'
 RESET = 'reset'
+NO_MUSIC = 'No Music'
 
 '''
 The agent User uses to interact with the system.
@@ -156,9 +157,6 @@ class GUIAgent(Agent):
     color_dict = { 'red': (243,115,54), 'yellow': (247,204,59) }
 
     def __init__(self, session):
-        # user_created, error_msg = User.create_new_user(self, username, User.Info())
-        # self.user = user_created
-        # self.user.set_preference({'global_theme':theme})
         self.app = session.app
         self.session = session
         self.window = self.wait_for_user_session()
@@ -171,8 +169,8 @@ class GUIAgent(Agent):
 
     def create_new_user(self):
         pending_new_user = self.username_input.value
-        if self.pending_theme and pending_new_user:
-            user_created, _ = User.create_new_user(self, pending_new_user, User.Info({ preference: { global_theme: self.pending_theme } }))
+        if pending_new_user:
+            user_created, _ = User.create_new_user(self, pending_new_user, User.Info({ preference: { global_theme: self.pending_theme if self.pending_theme else normal } }))
             if user_created:
                 self.user = user_created
                 self.new_user_window.destroy()
@@ -257,6 +255,17 @@ class GUIAgent(Agent):
         self.update_light_sliders()
         self.session.display_theme(self.current_theme_obj)
 
+    def customize_music(self, command):
+        if command == NO_MUSIC:
+            theme_name = self.current_theme_obj.name
+            self.customize_theme(self.current_theme_obj, { music: None })
+        else:
+            theme_name = command.replace('Music', 'Theme')
+            theme_music = name_to_global_theme[theme_name].music
+            self.customize_theme(self.current_theme_obj, { music: theme_music })
+        self.current_theme_obj = self.retrieve_theme(theme_name)
+        self.session.display_theme(self.current_theme_obj)
+
     def update_light_sliders(self):
         self.R, self.G, self.B = self.current_theme_obj.light
         self.R_slider.value, self.G_slider.value, self.B_slider.value = str(self.R), str(self.G), str(self.B)
@@ -268,7 +277,7 @@ class GUIAgent(Agent):
         self.session.display_theme(self.current_theme_obj)
 
     def create_interface(self):
-        width, height = 600, 500
+        width, height = 600, 400
         window = Window(self.app, title='Avia-X Mock Control', height=height, width=width, layout='grid')
         self.control_panel = window
         welcome_box = Box(window, height=50, width=width, grid=[0,0,12,1])
@@ -300,26 +309,26 @@ class GUIAgent(Agent):
             self.B = int(b_val)
             self.customize_light_from_rgb()
 
+        def set_volume(vol):
+            pass
+
         self.current_theme_obj = self.retrieve_theme(current_theme_name)
 
-        R_box = Box(window, height=120, width=width // 6, grid=[1,5])
+        R_box = Box(window, height=120, width=width // 6, grid=[1,5,1,2])
         self.R_slider = Slider(R_box, start=0, end=255, command=set_R, horizontal=False, width=20, height=100, align='top')
         Text(R_box, text='     R', align='bottom')
 
         self.G = 0
-        G_box = Box(window, height=120, width=width // 6, grid=[2,5,2,1])
+        G_box = Box(window, height=120, width=width // 6, grid=[2,5,2,2])
         self.G_slider = Slider(G_box, start=0, end=255, command=set_G, horizontal=False, width=20, height=100, align='top')
         Text(G_box, text='     G', align='bottom')
 
         self.B = 0
-        B_box = Box(window, height=120, width=width // 6, grid=[4,5])
+        B_box = Box(window, height=120, width=width // 6, grid=[4,5,1,2])
         self.B_slider = Slider(B_box, start=0, end=255, command=set_B, horizontal=False, width=20, height=100, align='top')
         Text(B_box, text='     B', align='bottom')
 
         self.update_light_sliders()
-
-        theme_music_title_box = Box(window, height=40, width=width // 2, grid=[0,6,6,1])
-        Text(theme_music_title_box, text='Music', align='bottom')
 
         set_preference_title_box = Box(window, height=50, width=width // 2, grid=[6,2,6,1])
         Text(set_preference_title_box, text='Set Preference', size=14, align='top')
@@ -327,7 +336,23 @@ class GUIAgent(Agent):
         switch_theme_box = Box(window, height=60, width=width // 2, grid=[6,3,6,1]) # x = 6,7,8,9,10,11
         Text(switch_theme_box, text='      Switch Theme', align='left')
         Text(switch_theme_box, text='      ', align='right')
-        Combo(switch_theme_box, command=self.update_preferred_theme, options=name_to_global_theme.keys(), align='right')
+        theme_combo = Combo(switch_theme_box, command=self.update_preferred_theme, options=name_to_global_theme.keys(), align='right')
+        theme_combo.value = current_theme_name
 
-        set_config_title_box = Box(window, height=40, width=width // 2, grid=[6,4,6,1])
-        Text(set_config_title_box, text='Rule Config')
+        theme_music_title_box = Box(window, height=40, width=width // 2, grid=[6,4,6,1])
+        Text(theme_music_title_box, text='Music')
+
+        music_menu_text_box = Box(window, height=60, width=width // 4, grid=[6,5,3,1])
+        Text(music_menu_text_box, text='      Switch Music      ')
+        music_menu_box = Box(window, height=60, width=width // 4, grid=[6,6,3,1])
+        music_options = [theme_name.replace('Theme', 'Music') for theme_name in name_to_global_theme.keys() if theme_name != normal] + [NO_MUSIC]
+        music_combo = Combo(music_menu_box, command=self.customize_music, options=music_options, align='top')
+        if self.current_theme_obj.music:
+            music_combo.value = [theme.name.replace('Theme', 'Music') for theme in global_themes if theme.music == self.current_theme_obj.music][0]
+        else:
+            music_combo.value = NO_MUSIC
+
+        music_volume_box = Box(window, height=120, width=width // 6, grid=[9,5,3,2])
+        self.volume_slider = Slider(music_volume_box, start=0, end=100, command=self.session.set_music_volume, width=width // 4, height=20, align='top')
+        self.volume_slider.value = 30
+        Text(music_volume_box, text='  Volume')
