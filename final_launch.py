@@ -251,13 +251,6 @@ class Infos:
 
 def main():
     session = GUISession()
-<<<<<<< HEAD
-=======
-    # agent = Agent()
-    # session.new_agent_login(agent)
-    # session.run()
-    
->>>>>>> 10b0bd6544aa6f81f950777e96b478945039a634
 
 if __name__ == '__main__':
     main()
