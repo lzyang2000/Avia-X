@@ -31,7 +31,7 @@ class User:
         if username in all_user_names:
             return (None, 'User with username {} already exists. Please try a different one.'.format(username))
         user = User(agent, username, info)
-        #agent.complete_onboarding_process(user)
+        database.save(user)
         return (user, None)
 
     @staticmethod
@@ -42,6 +42,10 @@ class User:
 
     def get_preference(self):
         return self.info.preference
+
+    # Most commonly used
+    def get_global_theme_preference(self):
+        return self.info.preference[global_theme]
 
     def set_preference(self, updated_preference):
         for (theme, setting) in updated_preference.items():
