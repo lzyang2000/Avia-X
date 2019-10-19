@@ -54,7 +54,7 @@ class GUIAgent(Agent):
             user = self.login_username.value
         self.await_session_window.destroy()
         self.user = User.login(self, user)
-        self.session.on_login_complete()
+        self.session.on_login_complete(self.user)
 
     def create_new_user(self):
         pending_new_user = self.username_input.value
@@ -63,7 +63,7 @@ class GUIAgent(Agent):
             if user_created:
                 self.user = user_created
                 self.new_user_window.destroy()
-                self.session.on_login_complete()
+                self.session.on_login_complete(self.user)
             else:
                 self.duplicate_user_err.visible = True
 

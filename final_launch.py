@@ -1,4 +1,4 @@
-from emotion_recognition.src.image_emotion_demo import *
+# from emotion_recognition.src.image_emotion_demo import *
 from mock_agent import *
 from user import *
 from theme import *
@@ -6,19 +6,21 @@ from guizero import *
 import pygame
 import time
 import os
-import board
-import busio
-import adafruit_tsl2591
-import csv
-import RPi.GPIO as GPIO
-import ledout
+
+rpi = False
+
+if rpi:
+    import board
+    import busio
+    import adafruit_tsl2591
+    import csv
+    import RPi.GPIO as GPIO
+    import ledout
+    GPIO_pin = 4 #Pressure Pin
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(GPIO_pin,GPIO.IN)
 
 RESET = "reset"
-
-GPIO_pin = 4 #Pressure Pin
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(GPIO_pin,GPIO.IN)
-        
 
 class Session:
 
@@ -27,8 +29,8 @@ class Session:
 
 class GUISession(Session):
 
-    state = { turbulence: 1 , luminance : 3, pressure: 1, emotion: neutral }
-    output_state = { theme: None, safety_belt_warning: False }
+    state = { turbulence: False , luminance : 3, pressure: False, emotion: neutral }
+    output_state = { theme: None, safety_belt_warning: True }
     idx = 0
     theme_obj = None
 
@@ -36,7 +38,8 @@ class GUISession(Session):
 
         pygame.mixer.init()
         self.curr_music = None
-        app = App(title="Avia-X is running")
+        self.width, self.height = 500, 500
+        app = App(title="Avia-X is running", width=self.width, height=self.height, layout='grid')
         self.app = app
         self.agent = GUIAgent(self)
 
@@ -50,12 +53,59 @@ class GUISession(Session):
         # self.music_play = Text(self.app, align = "left", width = "fill")
         self.app.display()
 
-    def on_login_complete(self):
-        app = self.app
-        welcome_box = Box(app, height=40, width='fill')
-        Text(welcome_box, text='Welcome Aboard!', align='bottom')
+    def on_login_complete(self, user):
+        self.create_dashboard()
         self.agent.create_interface()
         self.run()
+
+    def create_dashboard(self):
+        app = self.app
+
+        def bool_to_status(b):
+            return 'High' if b else 'Low'
+
+        # Welcome aboard
+        welcome_box = Box(app, height=40, width=self.width, grid=[0, 0, 3, 1])
+        Text(welcome_box, text='Welcome Aboard!', align='bottom')
+
+        # Current theme
+        theme_box = Box(app, height=30, width=self.width, grid=[0, 1, 3, 1])
+        self.current_theme_text = Text(theme_box, size=10, align='bottom')
+
+        # Safety belt
+        safety_belt_box = Box(app, height=50, width=self.width, grid=[0, 2, 3, 1])
+        self.safety_belt_text = Text(safety_belt_box, align='bottom', text='Please fasten your safety belt!', color='red', size=14, visible=False)
+
+        Box(app, height=30, width=self.width, grid=[0, 3, 3 ,1])
+
+        # Readings
+        lumi_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,4])
+        lumi_text = Text(lumi_box, text='{} {}'.format(luminance, 'reading'))
+
+        lumi_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,4])
+        self.lumi_reading_text = Text(lumi_reading_box, text=str(self.state[luminance]))
+        Box(app, height=40, width=self.width // 5, grid=[2,4])
+
+        pressure_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,5])
+        pressure_text = Text(pressure_box, text='{} {}'.format(pressure, 'reading'))
+
+        pressure_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,5])
+        self.pressure_reading_text = Text(pressure_reading_box, text=bool_to_status(self.state[pressure]))
+        Box(app, height=40, width=self.width // 5, grid=[2,5])
+
+        turbulence_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,6])
+        turbulence_text = Text(turbulence_box, text='{} {}'.format(turbulence, 'reading'))
+
+        turbulence_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,6])
+        self.turbulence_reading_text = Text(turbulence_reading_box, text=bool_to_status(self.state[turbulence]))
+        Box(app, height=40, width=self.width // 5, grid=[2,6])
+        
+        emotion_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,7])
+        emotion_text = Text(emotion_box, text='{} {}'.format(emotion, 'reading'))
+
+        emotion_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,7])
+        self.emotion_reading_text = Text(emotion_reading_box, text=self.state[emotion])
+        Box(app, height=40, width=self.width // 5, grid=[2,7])
 
     # Main functions
     def run(self):
@@ -71,8 +121,7 @@ class GUISession(Session):
             self.set_theme_light(displayed_theme_obj.light)
         self.play_music(displayed_theme_obj.music)
         self.theme_obj = displayed_theme_obj
-        # self.trigger_box.value = "Theme:" + displayed_theme.name + "Please Fasten your belt" \
-        #     if self.output_state[safety_belt_warning] else ""
+        self.current_theme_text.value = get_current_theme_string(displayed_theme_obj.name)
 
     def display_state(self):
         # self.text_emotion.value = "Emotion:" + self.state[emotion]
@@ -81,6 +130,7 @@ class GUISession(Session):
         # self.text_turbulence.value = "Turbulence:" + "High" if self.state[turbulence] else "Low"
         if self.theme_obj.name != self.output_state[theme]:
             self.agent.display_theme_from_name(self.output_state[theme])
+        self.safety_belt_text.visible = self.output_state[safety_belt_warning]
 
     def set_theme_light(self, light):
         self.app.bg = light
@@ -94,7 +144,7 @@ class GUISession(Session):
     def play_music(self, path):
         if not path:
             pygame.mixer.music.stop()
-            return 
+            return
         # self.play_music.val = "Current Music is:" + path
         path_to_album = './theme/assets/' + path
         if self.curr_music == path_to_album:
@@ -108,29 +158,25 @@ class GUISession(Session):
 
     # Updates the output state
     def handle_state(self, state):
-        cur_theme = self.output_state[theme]
-        for rule in rules:
-            update = rule.get_state_update(state)
-            if update:
-                self.output_state.update(update)
+        if rpi:
+            for rule in rules:
+                update = rule.get_state_update(state)
+                if update:
+                    self.output_state.update(update)
         self.display_state()
-
-    # def handle_global_triggers(self, triggers):
-    #     print(self.state)
-    #     print(triggers)
-    #     pass
 
     def update_state(self):
         self.idx += 1
-        if hasattr(self, 'prev_turbulences'):
-            self.all_infos = Infos(self.idx, self.prev_turbulences)
-        else:
-            self.all_infos = Infos(self.idx)
-        self.state[turbulence] = self.all_infos.turbulence
-        self.state[luminance] = self.all_infos.light
-        self.state[emotion] = self.all_infos.emotion
-        self.state[pressure] = self.all_infos.pressure
-        self.prev_turbulences = self.all_infos.prev_turbulences
+        if rpi:
+            if hasattr(self, 'prev_turbulences'):
+                self.all_infos = Infos(self.idx, self.prev_turbulences)
+            else:
+                self.all_infos = Infos(self.idx)
+            self.state[turbulence] = self.all_infos.turbulence
+            self.state[luminance] = self.all_infos.light
+            self.state[emotion] = self.all_infos.emotion
+            self.state[pressure] = self.all_infos.pressure
+            self.prev_turbulences = self.all_infos.prev_turbulences
 
 class Infos:
     # Attributes : self.light, self.emotion, self.turbulence
@@ -163,7 +209,6 @@ class Infos:
             readCSV = csv.reader(csvfile, delimiter=',')
             row = [line for idx, line in enumerate(readCSV) if idx == time_idx]
             row = row[0]
-            # print(row)
             row[1] = int(row[1])
             row[2] = float(row[2])
             row[3] = float(row[3])
@@ -172,15 +217,14 @@ class Infos:
                 if len(self.prev_turbulences) == 5: # TODO could edit for more effects
                     self.prev_turbulences.pop(0)
                 self.prev_turbulences.append(abs(row[1]))
-                if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
-                # all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
-                    self.turbulence = False
-                else:
-                    self.turbulence = True
+                # if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
+                #     self.turbulence = False
+                # else:
+                #     self.turbulence = True
+                self.turbulence = sum(self.prev_turbulences) / len(self.prev_turbulences) >= 1000
             else:
                 self.prev_turbulences = [row[1]]
                 self.turbulence = abs(row[1]) > 1000
-                # print(self.turbulence)
         self.prev_turbulences = prev_turbulences
 
     def lightPi(self, theme):
