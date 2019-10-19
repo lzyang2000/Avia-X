@@ -128,7 +128,7 @@ class GUISession(Session):
         self.prev_turbulences = self.all_infos.prev_turbulences
 
         # Light up the Rasp Pi
-        self.all_infos.lightPi(self.state[theme].name)
+        self.all_infos.lightPi(self.state[theme])
 
 
 class Infos:
