@@ -59,7 +59,7 @@ def change_color(theme):
 #     red_1.start(r)
 #    # red_2.start(r)
 #     red_3.start(r)
-# if __name__ == "__main__":
-#      change_color(warm)
+if __name__ == "__main__":
+     change_color(normal)
 # 
 #     #IO.cleanup()#turn lights off
