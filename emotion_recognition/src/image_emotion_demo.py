@@ -36,7 +36,7 @@ camera = picamera.PiCamera()
 camera.resolution = (1024, 768)
 camera.rotation = 180
 camera.start_preview()# -w 1296 -h 972 #-p ('50,50,950,950')
-camera.preview.window = '50,50,90,90'
+camera.preview.window = (50,50,90,90)
 #camera.start_preview()
 # camera = cv2.VideoCapture(0)
 # if not camera.isOpened():
