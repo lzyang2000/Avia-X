@@ -43,9 +43,13 @@ IO.setup(24,IO.OUT)
 # red_3 = IO.PWM(26,100)
 # 
 # 
-def change_color(theme):
-    print(theme)
-    IO.output((23,24),predefined_themes[theme])
+# def change_color(theme):
+#     print(theme)
+#     IO.output((23,24),predefined_themes[theme])
+def change_color_txt(theme):
+    f = open("theme.txt","w+")
+    f.write(theme)
+    f.close()
 #     ## B, G, R for themes
 #     color_space = predefined_themes[theme]
 #     b,g,r = color_space
