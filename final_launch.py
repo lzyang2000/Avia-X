@@ -3,21 +3,19 @@ from mock_agent import *
 from user import *
 from theme import *
 from guizero import *
-# from playsound import playsound
 import pygame
 import time
 import os
-import board
-import busio
-import adafruit_tsl2591
-import csv
-import RPi.GPIO as GPIO
+# import board
+# import busio
+# import adafruit_tsl2591
+# import csv
+# import RPi.GPIO as GPIO
 RESET = "reset"
-GPIO_pin = 4 #Pressure Pin
 
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(GPIO_pin,GPIO.IN)
+# GPIO_pin = 4 #Pressure Pin
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(GPIO_pin,GPIO.IN)
         
 
 class Session:
@@ -109,73 +107,73 @@ class GUISession(Session):
     def handle_state(self, state):
         pass
 
-    def handle_global_triggers(self, triggers):
-        print(self.state)
-        print(triggers)
-        pass
+    # def handle_global_triggers(self, triggers):
+    #     print(self.state)
+    #     print(triggers)
+    #     pass
 
     def update_state(self):
         self.idx += 1
-        if hasattr(self, 'prev_turbulences'):
-            self.all_infos = Infos(self.idx, self.prev_turbulences)
-        else:
-            self.all_infos = Infos(self.idx)
-        self.state[turbulence] = self.all_infos.turbulence
-        self.state[luminance] = self.all_infos.light
-        self.state[emotion] = self.all_infos.emotion
-        self.state[pressure] = self.all_infos.pressure
-        self.prev_turbulences = self.all_infos.prev_turbulences
+    #     if hasattr(self, 'prev_turbulences'):
+    #         self.all_infos = Infos(self.idx, self.prev_turbulences)
+    #     else:
+    #         self.all_infos = Infos(self.idx)
+    #     self.state[turbulence] = self.all_infos.turbulence
+    #     self.state[luminance] = self.all_infos.light
+    #     self.state[emotion] = self.all_infos.emotion
+    #     self.state[pressure] = self.all_infos.pressure
+    #     self.prev_turbulences = self.all_infos.prev_turbulences
 
 
-class Infos:
-    # Attributes : self.light, self.emotion, self.turbulence
-    def __init__(self, time_idx, prev_turbulences=None):
-        # Read in light data
-        # Initialize the I2C bus.
-        i2c = busio.I2C(board.SCL, board.SDA)
-        # Initialize the sensor.
-        sensor = adafruit_tsl2591.TSL2591(i2c)
-        self.light = sensor.lux
-        self.prev_turbulences = prev_turbulences
+# class Infos:
+#     # Attributes : self.light, self.emotion, self.turbulence
+#     def __init__(self, time_idx, prev_turbulences=None):
+#         # Read in light data
+#         # Initialize the I2C bus.
+#         i2c = busio.I2C(board.SCL, board.SDA)
+#         # Initialize the sensor.
+#         sensor = adafruit_tsl2591.TSL2591(i2c)
+#         self.light = sensor.lux
+#         self.prev_turbulences = prev_turbulences
         
-        # Facial Expression
-        facial_expr = main_predict()
-        if facial_expr == None:
-            self.emotion = "neutral"
-        self.emotion = facial_expr
+#         # Facial Expression
+#         facial_expr = main_predict()
+#         if facial_expr == None:
+#             self.emotion = "neutral"
+#         self.emotion = facial_expr
 
-        # Pressure (from verify.py)
-        #take a reading
-        input = GPIO.input(GPIO_pin)
-        if input:
-            self.pressure = True
-        else:
-            self.pressure = False
+#         # Pressure (from verify.py)
+#         #take a reading
+#         input = GPIO.input(GPIO_pin)
+#         if input:
+#             self.pressure = True
+#         else:
+#             self.pressure = False
         
-        # Turbulence
-        with open('Daher_Turbulence_data.csv') as csvfile:
-            readCSV = csv.reader(csvfile, delimiter=',')
-            row = [line for idx, line in enumerate(readCSV) if idx == time_idx]
-            row = row[0]
-            # print(row)
-            row[1] = int(row[1])
-            row[2] = float(row[2])
-            row[3] = float(row[3])
-            # row = readCSV[time_idx]
-            if self.prev_turbulences:
-                if len(self.prev_turbulences) == 5: # TODO could edit for more effects
-                    self.prev_turbulences.pop(0)
-                self.prev_turbulences.append(abs(row[1]))
-                if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
-                # all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
-                    self.turbulence = False
-                else:
-                    self.turbulence = True
-            else:
-                self.prev_turbulences = [row[1]]
-                self.turbulence = abs(row[1]) > 1000
-                # print(self.turbulence)
-        self.prev_turbulences = prev_turbulences
+#         # Turbulence
+#         with open('Daher_Turbulence_data.csv') as csvfile:
+#             readCSV = csv.reader(csvfile, delimiter=',')
+#             row = [line for idx, line in enumerate(readCSV) if idx == time_idx]
+#             row = row[0]
+#             # print(row)
+#             row[1] = int(row[1])
+#             row[2] = float(row[2])
+#             row[3] = float(row[3])
+#             # row = readCSV[time_idx]
+#             if self.prev_turbulences:
+#                 if len(self.prev_turbulences) == 5: # TODO could edit for more effects
+#                     self.prev_turbulences.pop(0)
+#                 self.prev_turbulences.append(abs(row[1]))
+#                 if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
+#                 # all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
+#                     self.turbulence = False
+#                 else:
+#                     self.turbulence = True
+#             else:
+#                 self.prev_turbulences = [row[1]]
+#                 self.turbulence = abs(row[1]) > 1000
+#                 # print(self.turbulence)
+#         self.prev_turbulences = prev_turbulences
 
 
 def main():
