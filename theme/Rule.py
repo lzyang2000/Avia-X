@@ -17,14 +17,20 @@ class StateToTargetThemeMapping(Rule):
     name = 'stateToTheme'
 
     def get_state_update(state):
-        pass
+        if state[emotion] in ["sad", "fear", "angry"]:
+            return {theme:warm}
+        if state[turbulence] or state[pressure]:
+            return {theme:quiet}
+        if state[luminance] > _:
+            return {theme:warm}
 
 class SafetyBeltWarning(Rule):
 
     name = 'safetyBelt'
 
     def get_state_update(state):
-        pass
+        if state[turbulence]:
+            return {safety_belt_warning:True}
 
 
 rules = [StateToTargetThemeMapping, SafetyBeltWarning]

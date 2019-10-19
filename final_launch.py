@@ -39,10 +39,10 @@ class GUISession(Session):
         self.app = app
         self.agent = GUIAgent(self)
 
-        # self.agent_name = Text(app, align = "top", width = "fill")
-        # self.trigger_box = Text(app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
-        # self.text_turbulence = Text(self.app, text="Getting Turbulence", align="left")
-        # self.text_lumi = Text(self.app, text="Getting Luminance", align="left")
+        self.agent_name = Text(self.app, align = "top", width = "fill")
+        self.trigger_box = Text(self.app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
+        self.text_turbulence = Text(self.app, text="Getting Turbulence", align="left")
+        self.text_lumi = Text(self.app, text="Getting Luminance", align="left")
  
         # # Info Window
         # self.info = Window(self.app, title="Avia-X is running", visible = False)
@@ -52,9 +52,9 @@ class GUISession(Session):
         # self.text_turbulence = Text(self.info, text="Getting Turbulence", align="left")
         # self.text_lumi = Text(self.info, text="Getting Luminance", align="left")
 
-        # # Display Theme Info
-        # self.light_cond = Text(self.info, align = "left", width = "fill")
-
+        # Display Theme Info
+        self.light_cond = Text(self.app, align = "left", width = "fill")
+        self.music_play = Text(self.app, align = "left", width = "fill")
         self.app.display()
 
     def on_login_complete(self):
@@ -75,15 +75,18 @@ class GUISession(Session):
     def display_theme(self, displayed_theme_obj):
         self.set_theme_light(displayed_theme_obj.light)
         self.play_music(displayed_theme_obj.music)
-        # self.trigger_box.value = "Theme:" + displayed_theme.name
+        self.trigger_box.value = "Theme:" + displayed_theme.name + "Please Fasten your belt" \
+            if self.output_state[safety_belt_warning] else ""
         self.output_state[theme] = displayed_theme_obj.name
+        self.display_state()
+        
 
     def display_state(self):
         # pass
-        self.text_emotion = "Emotion:" + self.state[emotion]
-        self.text_lumi = "Luminance:" + self.state[luminance]
-        self.text_pressure = "Pressure:" + self.state[pressure]
-        self.text_turbulence = "Turbulence:" + "High" if self.state[turbulence] else "Low"
+        self.text_emotion.value = "Emotion:" + self.state[emotion]
+        self.text_lumi.value = "Luminance:" + self.state[luminance]
+        self.text_pressure.value = "Pressure:" + self.state[pressure]
+        self.text_turbulence.value = "Turbulence:" + "High" if self.state[turbulence] else "Low"
 
     def set_theme_light(self, light):
         self.app.bg = light
@@ -96,6 +99,7 @@ class GUISession(Session):
         if not path:
             pygame.mixer.music.stop()
             return 
+        self.play_music.val = "Current Music is:" + path
         path_to_album = './theme/assets/' + path
         if self.curr_music == path_to_album:
             return
