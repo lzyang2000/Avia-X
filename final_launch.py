@@ -30,6 +30,7 @@ class GUISession(Session):
     state = { turbulence: 1 , luminance : 3, 'prev_turbulences': None, theme: None }
     output_state = { theme: None, safety_belt_warning: False }
     idx = 0
+    theme_obj = None
 
     def __init__(self):
 
@@ -73,7 +74,9 @@ class GUISession(Session):
         self.app.repeat(1000, respond_to_state)
 
     def display_theme(self, displayed_theme_obj):
-        self.set_theme_light(displayed_theme_obj.light)
+        self.output_state[theme] = displayed_theme_obj.name
+        if not self.theme_obj or displayed_theme_obj.light != self.theme_obj.light:
+            self.set_theme_light(displayed_theme_obj.light)
         self.play_music(displayed_theme_obj.music)
         self.trigger_box.value = "Theme:" + displayed_theme.name + "Please Fasten your belt" \
             if self.output_state[safety_belt_warning] else ""
@@ -91,6 +94,8 @@ class GUISession(Session):
     def set_theme_light(self, light):
         self.app.bg = light
         self.agent.control_panel.bg = None
+        # if hasattr(self, 'all_infos'):
+        #     self.all_infos.lightPi(self.output_state[theme])
 
     def set_music_volume(self, vol):
         pygame.mixer.music.set_volume(int(vol) * 1.00 / 100)
