@@ -35,6 +35,9 @@ emotion_target_size = emotion_classifier.input_shape[1:3]
 camera = picamera.PiCamera()
 camera.resolution = (1024, 768)
 camera.rotation = 180
+camera.fullscreen = False
+camera.start_preview()# -w 1296 -h 972 #-p ('50,50,950,950')
+camera.preview.window = '50,50,90,90'
 #camera.start_preview()
 # camera = cv2.VideoCapture(0)
 # if not camera.isOpened():
@@ -82,7 +85,7 @@ def main_predict():
             # At this point the image is available as stream.array
             image = stream.array
         # ret, frame = camera.read()
-        cv2.imshow("origin", image)
+        #cv2.imshow("origin", image)
         # image = frame[:, :, ::-1]  # BGR -> RGB
 
         # loading images
