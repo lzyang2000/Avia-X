@@ -87,8 +87,7 @@ def main_predict():
         cv2.namedWindow("origin", cv2.WINDOW_NORMAL)        # Create window with freedom of dimensions
         cv2.resizeWindow('origin', 600,600)
         cv2.imshow("origin", image)
-        # image = frame[:, :, ::-1]  # BGR -> RGB
-
+        cv2.waitKey(100)
         # loading images
         rgb_image = image  # load_image(image_path, grayscale=False)
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)  # load_image(image_path, grayscale=True)
