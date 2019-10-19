@@ -8,7 +8,6 @@ from theme import *
 
 def lumi_change(slider_value):
     textbox_lumi.value = "1e+"+slider_value
-    
 
 def turbulence_change(slider_value):
     textbox_turbulence.value = slider_value

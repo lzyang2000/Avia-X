@@ -4,6 +4,7 @@ from . import user_database as database
 
 class User:
 
+    # Any data about the user stored on the centralized system
     class Info:
         birthday = 'Not Provided'
         preference = { global_theme: None, personal_theme: None, disabled_default_reactions: {} }
@@ -40,9 +41,6 @@ class User:
         user_info_obj = User.Info(user_info)
         return User(agent, name, user_info_obj)
 
-    def get_preference(self):
-        return self.info.preference
-
     # Most commonly used
     def get_global_theme_preference(self):
         return self.info.preference[global_theme]
@@ -54,34 +52,11 @@ class User:
                 self.log_history(set_preference, (theme, setting))
         database.save(self)
 
-    def accepts_rule(self, rule_name):
-        return rule_name not in self.info.preference[disabled_default_reactions]
-
-    # We could implement more sophisticated override setting in the future. We can only turn it off for now
-    def manual_override(self, updating_reaction):
-        rule_name = updating_reaction[0]
-        self.log_history(manual_override, updating_reaction)
-        self.info.preference[disabled_default_reactions][rule_name] = True
-        database.save(self)
-
-    # We could implement 'add default reaction' in the future. We're sticking to existing ones for now
-    def revert_manual_override(self, updating_reaction):
-        rule_name = updating_reaction[0]
-        self.log_history(revert_manual_override, updating_reaction)
-        del self.info.preference[disabled_default_reactions][rule_name]
-        database.save(self)
-
     def log_history(self, history_type, type_specific_info):
         log_string = str(datetime.datetime.now()) + ' '
         if history_type == set_preference:
             theme, setting = type_specific_info
             log_string += 'Set preference: {} to {}.'.format(theme, setting)
-        elif history_type == manual_override:
-            rule_name, context = type_specific_info
-            log_string += 'Manual Override: {} is disabled. Context: {}.'.format(rule_name, context)
-        elif history_type == revert_manual_override:
-            rule_name = type_specific_info
-            log_string += 'Revert Override: {} is enabled.'.format(rule_name)
         else:
             log_string += 'Unknown operation'
         self.info.history.append(log_string)

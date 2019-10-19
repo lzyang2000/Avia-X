@@ -26,6 +26,7 @@ class Session:
 class GUISession(Session):
 
     state = { turbulence: 1 , luminance : 3, 'prev_turbulences': None, theme: None }
+    output_state = { theme: None, safety_belt_warning: False }
     idx = 0
 
     def __init__(self):
@@ -59,7 +60,6 @@ class GUISession(Session):
         welcome_box = Box(app, height=40, width='fill')
         Text(welcome_box, text='Welcome Aboard!', align='bottom')
         self.agent.create_interface()
-        self.display_theme(self.agent.retrieve_theme(self.agent.user.get_global_theme_preference()))
         self.run()
 
     # Main functions
@@ -70,17 +70,18 @@ class GUISession(Session):
 
         self.app.repeat(1000, respond_to_state)
 
-    def display_theme(self, displayed_theme):
-        self.set_theme_light(displayed_theme.light)
-        self.play_music(displayed_theme.music)
+    def display_theme(self, displayed_theme_obj):
+        self.set_theme_light(displayed_theme_obj.light)
+        self.play_music(displayed_theme_obj.music)
         # self.trigger_box.value = "Theme:" + displayed_theme.name
-        self.state[theme] = displayed_theme.name
+        self.output_state[theme] = displayed_theme_obj.name
 
     def display_state(self):
-        self.text_emotion = "Emotion:" + self.state[emotion]
-        self.text_lumi = "Luminance:" + self.state[luminance]
-        self.text_pressure = "Pressure:" + self.state[pressure]
-        self.text_turbulence = "Turbulence:" + "High" if self.state[turbulence] else "Low"
+        pass
+    #     self.text_emotion = "Emotion:" + self.state[emotion]
+    #     self.text_lumi = "Luminance:" + self.state[luminance]
+    #     self.text_pressure = "Pressure:" + self.state[pressure]
+    #     self.text_turbulence = "Turbulence:" + "High" if self.state[turbulence] else "Low"
 
     def set_theme_light(self, light):
         self.app.bg = light
@@ -103,9 +104,13 @@ class GUISession(Session):
             pygame.mixer.music.play(-1)
             self.curr_music = path_to_album
 
-    # Maps a state to a theme
+    # Updates the output state
     def handle_state(self, state):
-        pass
+        for rule in rules:
+            update = rule.get_state_update(state)
+            if update:
+                self.output_state.update(update)
+        self.display_theme(name_to_global_theme[self.output_state[theme]])
 
     # def handle_global_triggers(self, triggers):
     #     print(self.state)
@@ -123,6 +128,7 @@ class GUISession(Session):
     #     self.state[emotion] = self.all_infos.emotion
     #     self.state[pressure] = self.all_infos.pressure
     #     self.prev_turbulences = self.all_infos.prev_turbulences
+    
 
 
 # class Infos:
