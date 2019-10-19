@@ -44,6 +44,7 @@ IO.setup(24,IO.OUT)
 # 
 # 
 def change_color(theme):
+    print(theme)
     IO.output((23,24),predefined_themes[theme])
 #     ## B, G, R for themes
 #     color_space = predefined_themes[theme]
