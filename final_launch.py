@@ -103,7 +103,12 @@ class GUISession(Session):
         self.music_players[warm].audio_set_volume(int(vol))
         
     def play_music(self, prev_theme, new_theme):
-        if prev_theme == new_theme:
+        if prev_theme == None:
+            if new_theme == normal:
+                pass
+            else:
+                self.music_players[new_theme].play()
+        elif prev_theme == new_theme:
             pass
         elif prev_theme == normal:
             self.music_players[new_theme].play()
