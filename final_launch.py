@@ -40,6 +40,9 @@ class GUISession(Session):
         self.app = app
         self.agent = GUIAgent(self)
 
+        self.all_infos = Infos(0)
+        self.all_infos.lightPi(normal)
+
         # self.agent_name = Text(app, align = "top", width = "fill")
         # self.trigger_box = Text(app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
         # self.text_turbulence = Text(self.app, text="Getting Turbulence", align="left")
