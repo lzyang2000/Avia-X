@@ -17,6 +17,8 @@ class StateToTargetThemeMapping(Rule):
     name = 'stateToTheme'
 
     def get_state_update(state):
+        if state[emotion] == "happy":
+            return {theme:engaged}
         if state[emotion] in ["sad", "fear", "angry"]:
             return {theme:warm}
         if state[turbulence] or state[pressure]:
