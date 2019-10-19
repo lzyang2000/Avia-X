@@ -27,6 +27,8 @@ emotion = "Emotion"
 pressure = "Pressure"
 # prev_turbulences = 'prev_turbulences'
 
-action = 'action'
-policy = 'policy'
-context = 'context'
+neutral = 'Neutral'
+sad = 'Sad'
+angry = 'Angry'
+happy = 'Happy'
+fear = 'Fear'

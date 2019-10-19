@@ -27,7 +27,7 @@ class Session:
 
 class GUISession(Session):
 
-    state = { turbulence: 1 , luminance : 3, 'prev_turbulences': None, theme: None }
+    state = { turbulence: 1 , luminance : 3, pressure: 1, emotion: neutral }
     output_state = { theme: None, safety_belt_warning: False }
     idx = 0
     theme_obj = None
@@ -40,22 +40,14 @@ class GUISession(Session):
         self.app = app
         self.agent = GUIAgent(self)
 
-        self.agent_name = Text(self.app, align = "top", width = "fill")
-        self.trigger_box = Text(self.app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
-        self.text_turbulence = Text(self.app, text="Getting Turbulence", align="left")
-        self.text_lumi = Text(self.app, text="Getting Luminance", align="left")
- 
-        # # Info Window
-        # self.info = Window(self.app, title="Avia-X is running", visible = False)
-        # # Display Environment Info
-        # self.agent_name = Text(self.info, align = "top", width = "fill")
-        # self.trigger_box = Text(self.info, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
-        # self.text_turbulence = Text(self.info, text="Getting Turbulence", align="left")
-        # self.text_lumi = Text(self.info, text="Getting Luminance", align="left")
+        # self.agent_name = Text(self.app, align = "top", width = "fill")
+        # self.trigger_box = Text(self.app, text = "Belt:Safe. Theme:Normal", align = "top", width = "fill")
+        # self.text_turbulence = Text(self.app, text="Getting Turbulence", align="left")
+        # self.text_lumi = Text(self.app, text="Getting Luminance", align="left")
 
         # Display Theme Info
-        self.light_cond = Text(self.app, align = "left", width = "fill")
-        self.music_play = Text(self.app, align = "left", width = "fill")
+        # self.light_cond = Text(self.app, align = "left", width = "fill")
+        # self.music_play = Text(self.app, align = "left", width = "fill")
         self.app.display()
 
     def on_login_complete(self):
@@ -78,18 +70,17 @@ class GUISession(Session):
         if not self.theme_obj or displayed_theme_obj.light != self.theme_obj.light:
             self.set_theme_light(displayed_theme_obj.light)
         self.play_music(displayed_theme_obj.music)
-        self.trigger_box.value = "Theme:" + displayed_theme.name + "Please Fasten your belt" \
-            if self.output_state[safety_belt_warning] else ""
-        self.output_state[theme] = displayed_theme_obj.name
-        self.display_state()
-        
+        self.theme_obj = displayed_theme_obj
+        # self.trigger_box.value = "Theme:" + displayed_theme.name + "Please Fasten your belt" \
+        #     if self.output_state[safety_belt_warning] else ""
 
     def display_state(self):
-        # pass
-        self.text_emotion.value = "Emotion:" + self.state[emotion]
-        self.text_lumi.value = "Luminance:" + self.state[luminance]
-        self.text_pressure.value = "Pressure:" + self.state[pressure]
-        self.text_turbulence.value = "Turbulence:" + "High" if self.state[turbulence] else "Low"
+        # self.text_emotion.value = "Emotion:" + self.state[emotion]
+        # self.text_lumi.value = "Luminance:" + self.state[luminance]
+        # self.text_pressure.value = "Pressure:" + self.state[pressure]
+        # self.text_turbulence.value = "Turbulence:" + "High" if self.state[turbulence] else "Low"
+        if self.theme_obj.name != self.output_state[theme]:
+            self.agent.display_theme_from_name(self.output_state[theme])
 
     def set_theme_light(self, light):
         self.app.bg = light
@@ -104,7 +95,7 @@ class GUISession(Session):
         if not path:
             pygame.mixer.music.stop()
             return 
-        self.play_music.val = "Current Music is:" + path
+        # self.play_music.val = "Current Music is:" + path
         path_to_album = './theme/assets/' + path
         if self.curr_music == path_to_album:
             return
@@ -122,14 +113,7 @@ class GUISession(Session):
             update = rule.get_state_update(state)
             if update:
                 self.output_state.update(update)
-        self.display_theme(name_to_global_theme[self.output_state[theme]])
-
-        # Light up the Rasp Pi
-        new_theme = self.output_state[theme]
-        if cur_theme == new_theme:
-            pass
-        else:
-            self.all_infos.lightPi(self.output_state[theme])
+        self.display_state()
 
     # def handle_global_triggers(self, triggers):
     #     print(self.state)

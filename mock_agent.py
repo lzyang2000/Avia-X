@@ -171,7 +171,6 @@ class GUIAgent(Agent):
     def update_preferred_theme(self, new_theme_name):
         self.user.set_preference({ global_theme: new_theme_name })
         self.current_theme_obj = self.retrieve_theme(new_theme_name)
-        self.update_light_sliders()
         self.display_theme(self.current_theme_obj)
         self.session.display_theme(self.current_theme_obj)
 
@@ -180,6 +179,11 @@ class GUIAgent(Agent):
         self.current_theme_text.value = get_current_theme_string(theme_obj.name)
         self.music_combo.value = self.get_music_text(theme_obj)
         self.light_combo.value = RESET
+
+    def display_theme_from_name(self, theme_name):
+        theme_obj = self.retrieve_theme(theme_name)
+        self.current_theme_obj = theme_obj
+        self.display_theme(theme_obj)
 
     def create_interface(self):
         width, height = 600, 400
