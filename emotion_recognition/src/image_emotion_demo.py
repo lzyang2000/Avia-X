@@ -84,7 +84,9 @@ def main_predict():
             # At this point the image is available as stream.array
             image = stream.array
         # ret, frame = camera.read()
-            cv2.imshow("origin", image)
+        cv2.namedWindow("origin", cv2.WINDOW_NORMAL)        # Create window with freedom of dimensions
+        cv2.resizeWindow('origin', 600,600)
+        cv2.imshow("origin", image)
         # image = frame[:, :, ::-1]  # BGR -> RGB
 
         # loading images
