@@ -21,7 +21,7 @@ class StateToTargetThemeMapping(Rule):
             return {theme:warm}
         if state[turbulence] or state[pressure]:
             return {theme:quiet}
-        if state[luminance] > _:
+        if state[luminance] > 200:
             return {theme:warm}
 
 class SafetyBeltWarning(Rule):
