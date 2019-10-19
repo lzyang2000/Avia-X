@@ -30,6 +30,7 @@ class GUISession(Session):
     state = { turbulence: 1 , luminance : 3, 'prev_turbulences': None, theme: None }
     output_state = { theme: None, safety_belt_warning: False }
     idx = 0
+    theme_obj = None
 
     def __init__(self):
 
@@ -73,17 +74,19 @@ class GUISession(Session):
         self.app.repeat(1000, respond_to_state)
 
     def display_theme(self, displayed_theme_obj):
-        self.set_theme_light(displayed_theme_obj.light)
+        if not self.theme_obj or displayed_theme_obj.light != self.theme_obj.light:
+            self.set_theme_light(displayed_theme_obj.light)
         self.play_music(displayed_theme_obj.music)
         # self.trigger_box.value = "Theme:" + displayed_theme.name
         self.output_state[theme] = displayed_theme_obj.name
+        self.theme_obj = displayed_theme_obj
 
     def display_state(self):
-        pass
-    #     self.text_emotion = "Emotion:" + self.state[emotion]
-    #     self.text_lumi = "Luminance:" + self.state[luminance]
-    #     self.text_pressure = "Pressure:" + self.state[pressure]
-    #     self.text_turbulence = "Turbulence:" + "High" if self.state[turbulence] else "Low"
+        # pass
+        self.text_emotion = "Emotion:" + self.state[emotion]
+        self.text_lumi = "Luminance:" + self.state[luminance]
+        self.text_pressure = "Pressure:" + self.state[pressure]
+        self.text_turbulence = "Turbulence:" + "High" if self.state[turbulence] else "Low"
 
     def set_theme_light(self, light):
         self.app.bg = light
@@ -131,10 +134,6 @@ class GUISession(Session):
         self.state[pressure] = self.all_infos.pressure
         self.prev_turbulences = self.all_infos.prev_turbulences
 
-        # Light up the Rasp Pi
-        self.all_infos.lightPi(self.state[theme])
-
-
 class Infos:
     # Attributes : self.light, self.emotion, self.turbulence
     def __init__(self, time_idx, prev_turbulences=None):
@@ -146,50 +145,47 @@ class Infos:
         self.light = sensor.lux
         self.prev_turbulences = prev_turbulences
         
-#         # Facial Expression
-#         facial_expr = main_predict()
-#         if facial_expr == None:
-#             self.emotion = "neutral"
-#         self.emotion = facial_expr
+        # Facial Expression
+        facial_expr = main_predict()
+        if facial_expr == None:
+            self.emotion = "neutral"
+        self.emotion = facial_expr
 
-#         # Pressure (from verify.py)
-#         #take a reading
-#         input = GPIO.input(GPIO_pin)
-#         if input:
-#             self.pressure = True
-#         else:
-#             self.pressure = False
+        # Pressure (from verify.py)
+        #take a reading
+        input = GPIO.input(GPIO_pin)
+        if input:
+            self.pressure = True
+        else:
+            self.pressure = False
         
-#         # Turbulence
-#         with open('Daher_Turbulence_data.csv') as csvfile:
-#             readCSV = csv.reader(csvfile, delimiter=',')
-#             row = [line for idx, line in enumerate(readCSV) if idx == time_idx]
-#             row = row[0]
-#             # print(row)
-#             row[1] = int(row[1])
-#             row[2] = float(row[2])
-#             row[3] = float(row[3])
-#             # row = readCSV[time_idx]
-#             if self.prev_turbulences:
-#                 if len(self.prev_turbulences) == 5: # TODO could edit for more effects
-#                     self.prev_turbulences.pop(0)
-#                 self.prev_turbulences.append(abs(row[1]))
-#                 if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
-#                 # all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
-#                     self.turbulence = False
-#                 else:
-#                     self.turbulence = True
-#             else:
-#                 self.prev_turbulences = [row[1]]
-#                 self.turbulence = abs(row[1]) > 1000
-#                 # print(self.turbulence)
-#         self.prev_turbulences = prev_turbulences
+        # Turbulence
+        with open('Daher_Turbulence_data.csv') as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+            row = [line for idx, line in enumerate(readCSV) if idx == time_idx]
+            row = row[0]
+            # print(row)
+            row[1] = int(row[1])
+            row[2] = float(row[2])
+            row[3] = float(row[3])
+            # row = readCSV[time_idx]
+            if self.prev_turbulences:
+                if len(self.prev_turbulences) == 5: # TODO could edit for more effects
+                    self.prev_turbulences.pop(0)
+                self.prev_turbulences.append(abs(row[1]))
+                if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
+                # all([True if abs(t) > 500 else False for t in self.prev_turbulences]):
+                    self.turbulence = False
+                else:
+                    self.turbulence = True
+            else:
+                self.prev_turbulences = [row[1]]
+                self.turbulence = abs(row[1]) > 1000
+                # print(self.turbulence)
+        self.prev_turbulences = prev_turbulences
 
-<<<<<<< HEAD
     def lightPi(self, theme):
         ledout.change_color(theme)
-=======
->>>>>>> cbe8ccb05de0e25de68091844a73f0292e0cc11c
 
 def main():
     session = GUISession()

@@ -39,9 +39,6 @@ red_2 = IO.PWM(24,100)
 red_3 = IO.PWM(26,100)
 def change_color(theme):
     ## B, G, R for themes
-    IO.cleanup()
-    IO.setmode(GPIO.BCM)
-    IO.setup(GPIO_pin,GPIO.IN)
     color_space = predefined_themes[theme]
     b,g,r = color_space
     
