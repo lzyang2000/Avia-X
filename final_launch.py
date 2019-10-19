@@ -12,6 +12,7 @@ import busio
 import adafruit_tsl2591
 import csv
 import RPi.GPIO as GPIO
+import ledout
 RESET = "reset"
 GPIO_pin = 4 #Pressure Pin
 
@@ -126,6 +127,9 @@ class GUISession(Session):
         self.state[pressure] = self.all_infos.pressure
         self.prev_turbulences = self.all_infos.prev_turbulences
 
+        # Light up the Rasp Pi
+        self.all_infos.lightPi(self.theme.name)
+
 
 class Infos:
     # Attributes : self.light, self.emotion, self.turbulence
@@ -177,6 +181,8 @@ class Infos:
                 # print(self.turbulence)
         self.prev_turbulences = prev_turbulences
 
+    def lightPi(self, theme):
+        ledout.change_color(theme)
 
 def main():
     session = GUISession()
