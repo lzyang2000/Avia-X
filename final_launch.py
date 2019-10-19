@@ -182,6 +182,7 @@ class Infos:
         self.prev_turbulences = prev_turbulences
 
     def lightPi(self, theme):
+        IO.cleanup()
         ledout.change_color(theme)
 
 def main():
