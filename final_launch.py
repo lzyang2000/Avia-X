@@ -18,8 +18,8 @@ RESET = "reset"
 GPIO_pin = 4 #Pressure Pin
 
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(GPIO_pin,GPIO.IN)
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(GPIO_pin,GPIO.IN)
         
 
 class Session:
@@ -151,6 +151,9 @@ class Infos:
 
         # Pressure (from verify.py)
         #take a reading
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(GPIO_pin,GPIO.IN)
         input = GPIO.input(GPIO_pin)
         if input:
             self.pressure = True
