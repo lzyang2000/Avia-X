@@ -10,7 +10,15 @@ import os
 import board
 import busio
 import adafruit_tsl2591
+import csv
+import RPi.GPIO as GPIO
 RESET = "reset"
+GPIO_pin = 4 #Pressure Pin
+
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(GPIO_pin,GPIO.IN)
+        
 
 class Session:
 
@@ -186,6 +194,7 @@ class GUISession(Session):
         self.state[turbulence] = self.all_infos.turbulence
         self.state[luminance] = self.all_infos.light
         self.state[emotion] = self.all_infos.emotion
+        self.state[pressure] = self.all_infos.pressure
         self.prev_turbulences = self.all_infos.prev_turbulences
 
 
@@ -206,8 +215,15 @@ class Infos:
             self.emotion = "neutral"
         self.emotion = facial_expr
 
+        # Pressure (from verify.py)
+        #take a reading
+        input = GPIO.input(GPIO_pin)
+        if input:
+            self.pressure = True
+        else:
+            self.pressure = False
+        
         # Turbulence
-        import csv
         with open('Daher_Turbulence_data.csv') as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             row = [line for idx, line in enumerate(readCSV) if idx == time_idx]
@@ -235,6 +251,13 @@ class Infos:
 
 def main():
     session = GUISession()
+<<<<<<< HEAD
+=======
+    # agent = Agent()
+    # session.new_agent_login(agent)
+    # session.run()
+    
+>>>>>>> 10b0bd6544aa6f81f950777e96b478945039a634
 
 if __name__ == '__main__':
     main()
