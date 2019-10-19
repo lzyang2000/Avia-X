@@ -117,7 +117,7 @@ class GUISession(Session):
 
     def update_state(self):
         self.idx += 1
-        if prev_turbulences in self.state:
+        if self.state[prev_turbulences]:
             self.all_infos = Infos(self.idx, self.prev_turbulences)
         else:
             self.all_infos = Infos(self.idx)
