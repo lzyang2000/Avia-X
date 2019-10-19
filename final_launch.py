@@ -13,6 +13,7 @@ import adafruit_tsl2591
 import csv
 import RPi.GPIO as GPIO
 import ledout
+
 RESET = "reset"
 GPIO_pin = 4 #Pressure Pin
 
@@ -182,7 +183,6 @@ class Infos:
         self.prev_turbulences = prev_turbulences
 
     def lightPi(self, theme):
-        IO.cleanup()
         ledout.change_color(theme)
 
 def main():
