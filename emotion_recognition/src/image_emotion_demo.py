@@ -84,12 +84,12 @@ def main_predict():
             # At this point the image is available as stream.array
             image = stream.array
         # ret, frame = camera.read()
-        cv2.namedWindow("origin", cv2.WINDOW_NORMAL)        # Create window with freedom of dimensions
-        cv2.resizeWindow('origin', 600,600)
-        cv2.imshow("origin", image)
-        cv2.waitKey(100)
         # loading images
-        rgb_image = image  # load_image(image_path, grayscale=False)
+        rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB)  # load_image(image_path, grayscale=False)
+        cv2.namedWindow("origin", cv2.WINDOW_NORMAL)        # Create window with freedom of dimensions
+        cv2.resizeWindow('origin', 200,200)
+        cv2.imshow("origin", rgb_image)
+        cv2.waitKey(100)
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)  # load_image(image_path, grayscale=True)
 
         gray_image = np.squeeze(gray_image)
