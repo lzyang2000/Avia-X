@@ -34,8 +34,8 @@ class GUISession(Session):
 
     def __init__(self):
 
-        # pygame.mixer.init()
-        pygame.mixer.pre_init(frequency=44100, size=-16, channels=2)
+        pygame.mixer.pre_init(frequency=44100)
+        pygame.mixer.init()
         self.curr_music = None
         app = App(title="Avia-X is running")
         self.app = app
