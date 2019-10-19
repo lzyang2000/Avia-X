@@ -85,7 +85,7 @@ def main_predict():
             image = stream.array
         # ret, frame = camera.read()
         # loading images
-        rgb_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB)  # load_image(image_path, grayscale=False)
+        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # load_image(image_path, grayscale=False)
         cv2.namedWindow("origin", cv2.WINDOW_NORMAL)        # Create window with freedom of dimensions
         cv2.resizeWindow('origin', 200,200)
         cv2.imshow("origin", rgb_image)
