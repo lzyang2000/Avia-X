@@ -53,15 +53,15 @@ def main_predict():
 
 
     # handle exit
-    def onStop():
-        camera.stop_preview()
-        camera.release()
-        print("Shutdown")
-        GPIO.cleanup()
-        sys.exit()
+    # def onStop():
+    #     camera.stop_preview()
+    #     camera.release()
+    #     print("Shutdown")
+    #     GPIO.cleanup()
+    #     sys.exit()
 
 
-    atexit.register(onStop)
+    # atexit.register(onStop)
 
 
 
