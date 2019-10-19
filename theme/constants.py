@@ -25,7 +25,7 @@ entertainment_pause = 'Entertainment Pause'
 luminance = "Luminance"
 emotion = "Emotion"
 pressure = "Pressure"
-prev_turbulences = 'prev_turbulences'
+# prev_turbulences = 'prev_turbulences'
 
 action = 'action'
 policy = 'policy'
