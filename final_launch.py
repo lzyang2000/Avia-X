@@ -3,7 +3,7 @@ from mock_agent import *
 from user import *
 from theme import *
 from guizero import *
-import pygame
+# import pygame
 import time
 import os
 import board
@@ -12,6 +12,7 @@ import adafruit_tsl2591
 import csv
 import RPi.GPIO as GPIO
 import ledout
+import vlc
 
 RESET = "reset"
 
@@ -34,8 +35,12 @@ class GUISession(Session):
 
     def __init__(self):
 
-        pygame.mixer.pre_init(frequency=48000)
-        pygame.mixer.init()
+        # pygame.mixer.pre_init(frequency=48000)
+        # pygame.mixer.init()
+        self.music_players = { quiet : vlc.MediaPlayer("/home/pi/Avia-X/theme/assets/quiet_theme/music_playlist/quiet.mp3"),
+                        engaged : vlc.MediaPlayer("/home/pi/Avia-X/theme/assets/engaged_theme/music_playlist/music1.mp3"),
+                          warm  : vlc.MediaPlayer("/home/pi/Avia-X/theme/assets/warm_theme/music_playlist/warm.mp3") }
+
         self.curr_music = None
         app = App(title="Avia-X is running")
         self.app = app
@@ -67,10 +72,12 @@ class GUISession(Session):
         self.app.repeat(1000, respond_to_state)
 
     def display_theme(self, displayed_theme_obj):
+        prev_state = self.output_state[theme]
         self.output_state[theme] = displayed_theme_obj.name
         if not self.theme_obj or displayed_theme_obj.light != self.theme_obj.light:
             self.set_theme_light(displayed_theme_obj.light)
-        self.play_music(displayed_theme_obj.music)
+        # self.play_music(displayed_theme_obj.music)
+        self.play_music(prev_state, self.output_state[theme])
         self.theme_obj = displayed_theme_obj
         # self.trigger_box.value = "Theme:" + displayed_theme.name + "Please Fasten your belt" \
         #     if self.output_state[safety_belt_warning] else ""
@@ -92,20 +99,30 @@ class GUISession(Session):
     def set_music_volume(self, vol):
         pygame.mixer.music.set_volume(int(vol) * 1.00 / 100)
 
-    def play_music(self, path):
-        if not path:
-            pygame.mixer.music.stop()
-            return 
-        # self.play_music.val = "Current Music is:" + path
-        path_to_album = './theme/assets/' + path
-        if self.curr_music == path_to_album:
-            return
-        music_files = os.listdir(path_to_album)
-        if music_files:
-            music_file = path_to_album + '/' + music_files[0]
-            pygame.mixer.music.load(music_file)
-            pygame.mixer.music.play(-1)
-            self.curr_music = path_to_album
+    def play_music(self, prev_theme, new_theme):
+        if prev_theme == new_theme:
+            pass
+        elif prev_theme == normal:
+            self.music_players[new_theme].play()
+        elif new_theme == normal:
+            self.music_players[prev_theme].pause()
+        else:
+            self.music_players[prev_theme].pause()
+            self.music_players[new_theme].play()
+        return
+        # if not path:
+        #     pygame.mixer.music.stop()
+        #     return 
+        # # self.play_music.val = "Current Music is:" + path
+        # path_to_album = './theme/assets/' + path
+        # if self.curr_music == path_to_album:
+        #     return
+        # music_files = os.listdir(path_to_album)
+        # if music_files:
+        #     music_file = path_to_album + '/' + music_files[0]
+        #     pygame.mixer.music.load(music_file)
+        #     pygame.mixer.music.play(-1)
+        #     self.curr_music = path_to_album
 
     # Updates the output state
     def handle_state(self, state):
