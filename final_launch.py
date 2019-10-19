@@ -25,39 +25,9 @@ class Session:
     def __init__(self):
         self.agents = []
 
-    # def run(self):
-    #     while(True):
-    #         time.sleep(5)
-    #         state = self.gather_state()
-    #         self.handle_state(state)
-
-    # def new_agent_login(self, agent):
-    #     self.agents.append(agent)
-
-    # # Get emotion and bar input from GUI
-    # def gather_state(self):
-    #     return {turbulence: 85, luminance: 3, emotion:"neutral" }
-
-    def handle_state(self, state):
-        global_triggers = {}
-        for rule in adjustment_rules:
-            trigger_result = rule.trigger(state)
-            if trigger_result:
-                if rule.is_global:
-                    global_triggers.update({rule.name: trigger_result })
-        self.handle_global_triggers(global_triggers)
-
-
-    # # TODO: discuss how to override a global rule trigger
-    # def handle_global_triggers(self, triggers):
-    #     pass
-
 class GUISession(Session):
 
     state = { turbulence: 1 , luminance : 3, 'prev_turbulences': None, theme: None }
-    # warm_color = (255, 231, 211)
-    # bright_color = (255, 250, 229)
-    # color_dict = {'red': (243,115,54), 'yellow': (247,204,59) }
     idx = 0
 
     def __init__(self):
@@ -89,7 +59,7 @@ class GUISession(Session):
     def on_login_complete(self):
         app = self.app
         welcome_box = Box(app, height=40, width='fill')
-        Text(welcome_box, text='Welcome aboard, {}!'.format(self.agent.user.username), align='bottom')
+        Text(welcome_box, text='Welcome Aboard!', align='bottom')
         self.agent.create_interface()
         self.display_theme(self.agent.retrieve_theme(self.agent.user.get_global_theme_preference()))
         self.run()
@@ -143,37 +113,6 @@ class GUISession(Session):
         print(self.state)
         print(triggers)
         pass
-
-        # if not triggers:
-        #     return
-
-        # all_updates = {}
-        # for val in triggers.values():
-        #     all_updates.update(val)
-
-        # # anything that uses #self.agents[0] should consider multiple agents
-        # if safety_belt_warning in all_updates:
-        #     self.trigger_box.value = "Please Fasten your Belt"
-        # if theme in all_updates:
-        #     theme_name = all_updates[theme]
-        #     if theme_name == 'preference':
-        #         theme_name = self.agents[0].user.info.preference['global_theme']
-        #     updated_theme = self.agents[0].retrieve_theme(theme_name)
-        #     self.display_theme(updated_theme)
-
-
-#     # Helper Functions
-#     def new_agent_login(self, agent):
-#         self.agents.append(agent)
-#         preferred_theme = agent.user.info.preference['global_theme']
-
-#         theme_to_display = agent.retrieve_theme(preferred_theme)
-#         self.display_theme(theme_to_display)
-
-#         self.agent_name.value = ''.join([agent.user.username for agent in self.agents])
-
-#     def gather_state(self):
-#         return self.state
 
     def update_state(self):
         self.idx += 1
