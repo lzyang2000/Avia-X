@@ -117,7 +117,7 @@ class GUISession(Session):
 
     def update_state(self):
         self.idx += 1
-        if hasattr(self, 'prev_turbulences'):
+        if prev_turbulences in self.state:
             self.all_infos = Infos(self.idx, self.prev_turbulences)
         else:
             self.all_infos = Infos(self.idx)
@@ -125,7 +125,7 @@ class GUISession(Session):
         self.state[luminance] = self.all_infos.light
         self.state[emotion] = self.all_infos.emotion
         self.state[pressure] = self.all_infos.pressure
-        self.prev_turbulences = self.all_infos.prev_turbulences
+        self.state[prev_turbulences] = self.all_infos.prev_turbulences
 
         # Light up the Rasp Pi
         self.all_infos.lightPi(self.state[theme])
