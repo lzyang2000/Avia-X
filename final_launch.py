@@ -91,6 +91,7 @@ class GUISession(Session):
     def set_theme_light(self, light):
         self.app.bg = light
         self.agent.control_panel.bg = None
+        self.all_infos.lightPi(self.output_state[theme])
 
     def set_music_volume(self, vol):
         pygame.mixer.music.set_volume(int(vol) * 1.00 / 100)
