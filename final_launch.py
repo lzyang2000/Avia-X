@@ -98,9 +98,9 @@ class GUISession(Session):
 
     def set_music_volume(self, vol):
         # pygame.mixer.music.set_volume(int(vol) * 1.00 / 100)
-        self.music_players[quiet].audio_set_volume(vol)
-        self.music_players[engaged].audio_set_volume(vol)
-        self.music_players[warm].audio_set_volume(vol)
+        self.music_players[quiet].audio_set_volume(int(vol))
+        self.music_players[engaged].audio_set_volume(int(vol))
+        self.music_players[warm].audio_set_volume(int(vol))
         
     def play_music(self, prev_theme, new_theme):
         if prev_theme == new_theme:
