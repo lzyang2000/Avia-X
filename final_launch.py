@@ -154,6 +154,7 @@ class Infos:
         input = GPIO.input(GPIO_pin)
         if input:
             self.pressure = True
+            print("Under Pressure")
         else:
             self.pressure = False
         
