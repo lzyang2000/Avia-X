@@ -267,7 +267,7 @@ class GUIAgent(Agent):
         # Change music volume
         music_volume_box = Box(window, height=120, width=width // 6, grid=[9,5,3,2])
         self.volume_slider = Slider(music_volume_box, start=0, end=100, command=self.session.set_music_volume, width=width // 4, height=20, align='top')
-        self.volume_slider.value = 30
+        self.volume_slider.value = 100
         Text(music_volume_box, text='  Volume')
         self.display_theme(self.current_theme_obj)
         self.session.display_theme(self.current_theme_obj)
