@@ -141,10 +141,10 @@ class GUISession(Session):
         self.current_music_text.value = 'Current Music: ' + self.agent.get_music_text(displayed_theme_obj)
 
     def display_state(self):
-        # self.text_emotion.value = "Emotion:" + self.state[emotion]
-        # self.text_lumi.value = "Luminance:" + self.state[luminance]
-        # self.text_pressure.value = "Pressure:" + self.state[pressure]
-        # self.text_turbulence.value = "Turbulence:" + "High" if self.state[turbulence] else "Low"
+        self.emotion_reading_text = self.state[emotion]
+        self.pressure_reading_text = self.state[pressure]
+        self.luminance_reading_text = self.state[luminance]
+        self.turbulence_reading_text = self.state[turbulence]
         if self.theme_obj.name != self.output_state[theme]:
             self.agent.display_theme_from_name(self.output_state[theme])
         self.safety_belt_text.visible = self.output_state[safety_belt_warning]
@@ -176,11 +176,10 @@ class GUISession(Session):
 
     # Updates the output state
     def handle_state(self, state):
-        if rpi:
-            for rule in rules:
-                update = rule.get_state_update(state)
-                if update:
-                    self.output_state.update(update)
+        for rule in rules:
+            update = rule.get_state_update(state)
+            if update:
+                self.output_state.update(update)
         self.display_state()
 
     def update_state(self):
