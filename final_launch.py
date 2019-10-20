@@ -20,8 +20,6 @@ if rpi:
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(GPIO_pin,GPIO.IN)
 
-RESET = "reset"
-
 class Session:
 
     def __init__(self):
@@ -54,7 +52,7 @@ class GUISession(Session):
         # self.music_play = Text(self.app, align = "left", width = "fill")
         self.app.display()
 
-    def on_login_complete(self, user):
+    def on_login_complete(self):
         self.create_dashboard()
         self.agent.create_interface()
         self.run()
@@ -146,8 +144,12 @@ class GUISession(Session):
         self.pressure_reading_text.value = bool_to_status(self.state[pressure])
         self.luminance_reading_text.value = self.state[luminance]
         self.turbulence_reading_text.value = bool_to_status(self.state[turbulence])
-        if self.theme_obj.name != self.output_state[theme]:
-            self.agent.display_theme_from_name(self.output_state[theme])
+
+        new_theme = self.output_state[theme]
+        if self.theme_obj.name != new_theme:
+            if new_theme == RESET:
+                new_theme = self.agent.user.get_global_theme_preference()
+            self.agent.display_theme_from_name(new_theme)
         self.safety_belt_text.visible = self.output_state[safety_belt_warning]
 
     def set_theme_light(self, light):
@@ -180,8 +182,7 @@ class GUISession(Session):
     def handle_state(self, state):
         for rule in rules:
             update = rule.get_state_update(state)
-            if update:
-                self.output_state.update(update)
+            self.output_state.update(update)
         self.display_state()
 
     def update_state(self):

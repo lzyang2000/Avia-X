@@ -1,6 +1,7 @@
 from .Theme import *
 
 theme = 'Theme'
+RESET = 'default'
 
 quiet = 'Quiet Theme'
 engaged = 'Engaged Theme'

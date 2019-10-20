@@ -6,7 +6,6 @@ import time
 
 NEW_USER_COMMAND = 'NEW USER'
 SKIP_COMMAND = 'SKIP'
-RESET = 'default'
 NO_MUSIC = 'No Music'
 
 '''
@@ -56,7 +55,7 @@ class GUIAgent(Agent):
                 return
         self.await_session_window.destroy()
         self.user = User.login(self, user)
-        self.session.on_login_complete(self.user)
+        self.session.on_login_complete()
 
     def create_new_user(self):
         pending_new_user = self.username_input.value
@@ -65,7 +64,7 @@ class GUIAgent(Agent):
             if user_created:
                 self.user = user_created
                 self.new_user_window.destroy()
-                self.session.on_login_complete(self.user)
+                self.session.on_login_complete()
             else:
                 self.duplicate_user_err.visible = True
 

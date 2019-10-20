@@ -1,4 +1,4 @@
-from .constants import *
+from . import *
 
 class Rule():
     # Rules are not modifiable for now
@@ -25,6 +25,7 @@ class StateToTargetThemeMapping(Rule):
             return { theme: quiet }
         if state[luminance] > 200:
             return { theme: warm }
+        return { theme: RESET }
 
 class SafetyBeltWarning(Rule):
 
