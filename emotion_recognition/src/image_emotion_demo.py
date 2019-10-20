@@ -134,7 +134,7 @@ def main_predict():
             print("Prediction:", emotion_text)
 
         end = time()
-        print("Total predict time: %.fs," % (end - start), "sleeping for 5 seconds...")
+        #print("Total predict time: %.fs," % (end - start), "sleeping for 5 seconds...")
         try:
             return emotion_text
         except:
