@@ -154,6 +154,8 @@ class GUISession(Session):
         self.agent.control_panel.bg = None
         if hasattr(self, 'all_infos'):
             self.all_infos.lightPi(self.output_state[theme])
+        else:
+            ledout.change_color(self.output_state[theme])
 
     def set_music_volume(self, vol):
         pygame.mixer.music.set_volume(int(vol) * 1.00 / 100)
