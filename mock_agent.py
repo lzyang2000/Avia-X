@@ -52,6 +52,8 @@ class GUIAgent(Agent):
             user = self.pending_user
         else:
             user = self.login_username.value
+            if not user:
+                return
         self.await_session_window.destroy()
         self.user = User.login(self, user)
         self.session.on_login_complete(self.user)
