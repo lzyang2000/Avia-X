@@ -205,7 +205,7 @@ class Infos:
         i2c = busio.I2C(board.SCL, board.SDA)
         # Initialize the sensor.
         sensor = adafruit_tsl2591.TSL2591(i2c)
-        self.light = sensor.lux
+        self.light = int(sensor.lux)
         self.prev_turbulences = prev_turbulences
         
         # Facial Expression
