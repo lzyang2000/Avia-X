@@ -1,4 +1,3 @@
-# from emotion_recognition.src.image_emotion_demo import *
 from mock_agent import *
 from user import *
 from theme import *
@@ -6,19 +5,11 @@ from guizero import *
 import pygame
 import time
 import os
-<<<<<<< HEAD
-=======
-import board
-import busio
-import adafruit_tsl2591
-import csv
-import RPi.GPIO as GPIO
-import ledout
->>>>>>> 2fcb31c1458318021b40a9c3fef83685fdcf1530
 
 rpi = False
 
 if rpi:
+    from emotion_recognition.src.image_emotion_demo import *
     import board
     import busio
     import adafruit_tsl2591
@@ -74,48 +65,63 @@ class GUISession(Session):
         def bool_to_status(b):
             return 'High' if b else 'Low'
 
+        y = 0
+
         # Welcome aboard
-        welcome_box = Box(app, height=40, width=self.width, grid=[0, 0, 3, 1])
+        welcome_box = Box(app, height=40, width=self.width, grid=[0, y, 3, 1])
         Text(welcome_box, text='Welcome Aboard!', align='bottom')
+        y += 1
 
         # Current theme
-        theme_box = Box(app, height=30, width=self.width, grid=[0, 1, 3, 1])
+        theme_box = Box(app, height=30, width=self.width, grid=[0, y, 3, 1])
         self.current_theme_text = Text(theme_box, size=10, align='bottom')
+        y += 1
+
+        # Current music
+        music_box = Box(app, height=30, width=self.width, grid=[0, y, 3, 1])
+        self.current_music_text = Text(music_box, size=10, align='bottom')
+        y += 1
 
         # Safety belt
-        safety_belt_box = Box(app, height=50, width=self.width, grid=[0, 2, 3, 1])
+        safety_belt_box = Box(app, height=50, width=self.width, grid=[0, y, 3, 1])
         self.safety_belt_text = Text(safety_belt_box, align='bottom', text='Please fasten your safety belt!', color='red', size=14, visible=False)
+        y += 1
 
-        Box(app, height=30, width=self.width, grid=[0, 3, 3 ,1])
+        Box(app, height=30, width=self.width, grid=[0, y, 3 ,1])
+        y += 1
 
         # Readings
-        lumi_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,4])
+        lumi_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,y])
         lumi_text = Text(lumi_box, text='{} {}'.format(luminance, 'reading'))
 
-        lumi_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,4])
+        lumi_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,y])
         self.lumi_reading_text = Text(lumi_reading_box, text=str(self.state[luminance]))
-        Box(app, height=40, width=self.width // 5, grid=[2,4])
+        Box(app, height=40, width=self.width // 5, grid=[2,y])
+        y += 1
 
-        pressure_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,5])
+        pressure_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,y])
         pressure_text = Text(pressure_box, text='{} {}'.format(pressure, 'reading'))
 
-        pressure_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,5])
+        pressure_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,y])
         self.pressure_reading_text = Text(pressure_reading_box, text=bool_to_status(self.state[pressure]))
-        Box(app, height=40, width=self.width // 5, grid=[2,5])
+        Box(app, height=40, width=self.width // 5, grid=[2,y])
+        y += 1
 
-        turbulence_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,6])
+        turbulence_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,y])
         turbulence_text = Text(turbulence_box, text='{} {}'.format(turbulence, 'reading'))
 
-        turbulence_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,6])
+        turbulence_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,y])
         self.turbulence_reading_text = Text(turbulence_reading_box, text=bool_to_status(self.state[turbulence]))
-        Box(app, height=40, width=self.width // 5, grid=[2,6])
+        Box(app, height=40, width=self.width // 5, grid=[2,y])
+        y += 1
         
-        emotion_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,7])
+        emotion_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,y])
         emotion_text = Text(emotion_box, text='{} {}'.format(emotion, 'reading'))
 
-        emotion_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,7])
+        emotion_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,y])
         self.emotion_reading_text = Text(emotion_reading_box, text=self.state[emotion])
-        Box(app, height=40, width=self.width // 5, grid=[2,7])
+        Box(app, height=40, width=self.width // 5, grid=[2,y])
+
 
     # Main functions
     def run(self):
@@ -132,6 +138,7 @@ class GUISession(Session):
         self.play_music(displayed_theme_obj.music)
         self.theme_obj = displayed_theme_obj
         self.current_theme_text.value = get_current_theme_string(displayed_theme_obj.name)
+        self.current_music_text.value = 'Current Music: ' + self.agent.get_music_text(displayed_theme_obj)
 
     def display_state(self):
         # self.text_emotion.value = "Emotion:" + self.state[emotion]
