@@ -6,7 +6,7 @@ import pygame
 import time
 import os
 
-rpi = False
+rpi = True
 
 if rpi:
     from emotion_recognition.src.image_emotion_demo import *
@@ -141,10 +141,10 @@ class GUISession(Session):
         self.current_music_text.value = 'Current Music: ' + self.agent.get_music_text(displayed_theme_obj)
 
     def display_state(self):
-        self.emotion_reading_text = self.state[emotion]
-        self.pressure_reading_text = self.state[pressure]
-        self.luminance_reading_text = self.state[luminance]
-        self.turbulence_reading_text = self.state[turbulence]
+        self.emotion_reading_text.value = self.state[emotion]
+        self.pressure_reading_text.value = self.state[pressure]
+        self.luminance_reading_text.value = self.state[luminance]
+        self.turbulence_reading_text.value = self.state[turbulence]
         if self.theme_obj.name != self.output_state[theme]:
             self.agent.display_theme_from_name(self.output_state[theme])
         self.safety_belt_text.visible = self.output_state[safety_belt_warning]
