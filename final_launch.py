@@ -171,7 +171,7 @@ class GUISession(Session):
             music_file = path_to_album + '/' + music_files[0]
             pygame.mixer.music.load(music_file)
             pygame.mixer.music.play(-1)
-            pygame.time.wait(20)
+            pygame.time.wait(300)
             self.curr_music = path_to_album
 
     # Updates the output state
