@@ -214,7 +214,7 @@ class Infos:
             self.emotion = neutral
         else:
             self.emotion = facial_expr
-        self.emotion = self.emotion[0].upper + self.emotion[1:]
+        self.emotion = self.emotion[0].upper() + self.emotion[1:]
 
         # Pressure (from verify.py)
         #take a reading
