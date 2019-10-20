@@ -34,7 +34,7 @@ emotion_target_size = emotion_classifier.input_shape[1:3]
 #init cam
 camera = picamera.PiCamera()
 camera.resolution = (1024, 768)
-camera.rotation = 180
+camera.rotation = 0
 #camera.start_preview(fullscreen=False,window=(50,50,270,270))# -w 1296 -h 972 #-p ('50,50,950,950')
 #camera.preview.window = (50,50,90,90)
 #camera.start_preview()
