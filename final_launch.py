@@ -206,7 +206,7 @@ class Infos:
         i2c = busio.I2C(board.SCL, board.SDA)
         # Initialize the sensor.
         sensor = adafruit_tsl2591.TSL2591(i2c)
-        self.light = sensor.lux
+        self.light = int(sensor.lux)
         self.prev_turbulences = prev_turbulences
         
         # Facial Expression
@@ -215,7 +215,7 @@ class Infos:
             self.emotion = neutral
         else:
             self.emotion = facial_expr
-        self.emotion = self.emotion[0].upper + self.emotion[1:]
+        self.emotion = self.emotion[0].upper() + self.emotion[1:]
 
         # Pressure (from verify.py)
         #take a reading
