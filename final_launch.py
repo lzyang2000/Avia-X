@@ -91,11 +91,11 @@ class GUISession(Session):
         y += 1
 
         # Readings
-        lumi_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,y])
-        lumi_text = Text(lumi_box, text='{} {}'.format(luminance, 'reading'))
+        luminance_box = Box(app, height=40, width=self.width * 3 // 5, grid=[0,y])
+        luminance_text = Text(luminance_box, text='{} {}'.format(luminance, 'reading'))
 
-        lumi_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,y])
-        self.lumi_reading_text = Text(lumi_reading_box, text=str(self.state[luminance]))
+        luminance_reading_box = Box(app, height=40, width=self.width // 5, grid=[1,y])
+        self.luminance_reading_text = Text(luminance_reading_box, text=str(self.state[luminance]))
         Box(app, height=40, width=self.width // 5, grid=[2,y])
         y += 1
 
@@ -141,10 +141,11 @@ class GUISession(Session):
         self.current_music_text.value = 'Current Music: ' + self.agent.get_music_text(displayed_theme_obj)
 
     def display_state(self):
+
         self.emotion_reading_text.value = self.state[emotion]
-        self.pressure_reading_text.value = self.state[pressure]
+        self.pressure_reading_text.value = bool_to_status(self.state[pressure])
         self.luminance_reading_text.value = self.state[luminance]
-        self.turbulence_reading_text.value = self.state[turbulence]
+        self.turbulence_reading_text.value = bool_to_status(self.state[turbulence])
         if self.theme_obj.name != self.output_state[theme]:
             self.agent.display_theme_from_name(self.output_state[theme])
         self.safety_belt_text.visible = self.output_state[safety_belt_warning]
@@ -154,7 +155,7 @@ class GUISession(Session):
         self.agent.control_panel.bg = None
         if hasattr(self, 'all_infos'):
             self.all_infos.lightPi(self.output_state[theme])
-        else:
+        elif rpi:
             ledout.change_color(self.output_state[theme])
 
     def set_music_volume(self, vol):
@@ -164,7 +165,6 @@ class GUISession(Session):
         if not path:
             pygame.mixer.music.stop()
             return 
-        # self.play_music.val = "Current Music is:" + path
         path_to_album = './theme/assets/' + path
         if self.curr_music == path_to_album:
             return
@@ -211,8 +211,10 @@ class Infos:
         # Facial Expression
         facial_expr = main_predict()
         if facial_expr == None:
-            self.emotion = "neutral"
-        self.emotion = facial_expr
+            self.emotion = neutral
+        else:
+            self.emotion = facial_expr
+        self.emotion = self.emotion[0].upper + self.emotion[1:]
 
         # Pressure (from verify.py)
         #take a reading
@@ -236,10 +238,6 @@ class Infos:
                 if len(self.prev_turbulences) == 5: # TODO could edit for more effects
                     self.prev_turbulences.pop(0)
                 self.prev_turbulences.append(abs(row[1]))
-                # if sum(self.prev_turbulences) / len(self.prev_turbulences) < 1000:
-                #     self.turbulence = False
-                # else:
-                #     self.turbulence = True
                 self.turbulence = sum(self.prev_turbulences) / len(self.prev_turbulences) >= 1000
             else:
                 self.prev_turbulences = [row[1]]
@@ -251,6 +249,9 @@ class Infos:
 
 def main():
     session = GUISession()
+
+def bool_to_status(b):
+    return 'High' if b else 'Low'
 
 if __name__ == '__main__':
     main()

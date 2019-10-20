@@ -6,7 +6,7 @@ class Rule():
 
     # Returns the output state after applying the rule
     def get_state_update(state):
-        print()
+        pass
 
     # Modify the rule. 
     def modify(modification):
@@ -17,9 +17,9 @@ class StateToTargetThemeMapping(Rule):
     name = 'stateToTheme'
 
     def get_state_update(state):
-        if state[emotion] == "happy":
+        if state[emotion] == happy:
             return { theme: engaged }
-        if state[emotion] in ["sad", "fear", "angry"]:
+        if state[emotion] in [sad, fear, angry]:
             return { theme: warm }
         if state[turbulence] or state[pressure]:
             return { theme: quiet }
