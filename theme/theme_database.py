@@ -26,6 +26,8 @@ def remove(username, theme_name):
     customized_name = get_customized_name(username, theme_name)
     if customized_name in data:
         del data[customized_name]
+    with open(file_path, 'w') as fp:
+        json.dump(data, fp)
 
 def find(username=None, theme_name=None):
     if username and theme_name:

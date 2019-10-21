@@ -1,6 +1,7 @@
 from .Theme import *
 
 theme = 'Theme'
+RESET = 'default'
 
 quiet = 'Quiet Theme'
 engaged = 'Engaged Theme'
@@ -22,10 +23,13 @@ turbulence = 'Turbulence'
 ambiant_light = 'Ambiant Light'
 safety_belt_warning = 'Safety Belt Warning'
 entertainment_pause = 'Entertainment Pause'
-luminence = "Luminence"
+luminance = "Luminance"
 emotion = "Emotion"
+pressure = "Pressure"
+# prev_turbulences = 'prev_turbulences'
 
-action = 'action'
-policy = 'policy'
-context = 'context'
-
+neutral = 'Neutral'
+sad = 'Sad'
+angry = 'Angry'
+happy = 'Happy'
+fear = 'Fear'

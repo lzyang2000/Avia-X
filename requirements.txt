@@ -11,3 +11,5 @@ tensorflow
 guizero
 opencv-python
 playsound
+pygame
+python-vlc

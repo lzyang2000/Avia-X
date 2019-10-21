@@ -5,8 +5,8 @@ import atexit
 import cv2
 from keras.models import load_model
 import numpy as np
-# import picamera
-# import picamera.array
+import picamera
+import picamera.array
 from emotion_recognition.src import utils
 from emotion_recognition.src.utils.datasets import get_labels
 from emotion_recognition.src.utils.inference import detect_faces
@@ -31,10 +31,16 @@ emotion_classifier = load_model(emotion_model_path, compile=False)
 # getting input model shapes for inference
 emotion_target_size = emotion_classifier.input_shape[1:3]
 # gender_target_size = gender_classifier.input_shape[1:3]
-
-camera = cv2.VideoCapture(0)
-if not camera.isOpened():
-    raise Exception("Could not open video device")
+#init cam
+camera = picamera.PiCamera()
+camera.resolution = (1024, 768)
+camera.rotation = 0
+#camera.start_preview(fullscreen=False,window=(50,50,270,270))# -w 1296 -h 972 #-p ('50,50,950,950')
+#camera.preview.window = (50,50,90,90)
+#camera.start_preview()
+# camera = cv2.VideoCapture(0)
+# if not camera.isOpened():
+#     raise Exception("Could not open video device")
 
 def main_predict():
     # gender_labels = get_labels('imdb')
@@ -46,17 +52,14 @@ def main_predict():
     emotion_offsets = (20, 40)
     emotion_offsets = (0, 0)
 
-    # init cam
-    # camera = picamera.PiCamera()
-    # camera.resolution = (1024, 768)
-    # camera.rotation = 180
-    # camera.start_preview()
+
 
     # handle exit
     def onStop():
-        # camera.stop_preview()
+        camera.stop_preview()
         camera.release()
         print("Shutdown")
+        GPIO.cleanup()
         sys.exit()
 
 
@@ -76,16 +79,17 @@ def main_predict():
         print("New iter")
         start = time()
         # take image
-        # with picamera.array.PiRGBArray(camera) as stream:
-        #     camera.capture(stream, format='rgb')
-        #     # At this point the image is available as stream.array
-        #     image = stream.array
-        ret, frame = camera.read()
-        cv2.imshow("origin", frame)
-        image = frame[:, :, ::-1]  # BGR -> RGB
-
+        with picamera.array.PiRGBArray(camera) as stream:
+            camera.capture(stream, format='rgb')
+            # At this point the image is available as stream.array
+            image = stream.array
+        # ret, frame = camera.read()
         # loading images
-        rgb_image = image  # load_image(image_path, grayscale=False)
+        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # load_image(image_path, grayscale=False)
+        cv2.namedWindow("origin", cv2.WINDOW_NORMAL)        # Create window with freedom of dimensions
+        cv2.resizeWindow('origin', 200,200)
+        cv2.imshow("origin", rgb_image)
+        cv2.waitKey(100)
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)  # load_image(image_path, grayscale=True)
 
         gray_image = np.squeeze(gray_image)
@@ -130,7 +134,7 @@ def main_predict():
             print("Prediction:", emotion_text)
 
         end = time()
-        print("Total predict time: %.fs," % (end - start), "sleeping for 5 seconds...")
+        #print("Total predict time: %.fs," % (end - start), "sleeping for 5 seconds...")
         try:
             return emotion_text
         except:

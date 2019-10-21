@@ -8,7 +8,6 @@ from theme import *
 
 def lumi_change(slider_value):
     textbox_lumi.value = "1e+"+slider_value
-    
 
 def turbulence_change(slider_value):
     textbox_turbulence.value = slider_value
@@ -57,3 +56,14 @@ output_bar = Text(app, text = "Getting Output...", align = "left")
 output_bar.repeat(5000, display_output)
 
 app.display()
+
+
+
+
+
+
+
+# create customer elements
+
+
+self.app.display()

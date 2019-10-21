@@ -1,82 +1,39 @@
-from .constants import *
+from . import *
 
-# Automatic adjustment rules are hardcoded as python classes
-# because we don't yet plan to allow customized rules
-class Rule:
+class Rule():
+    # Rules are not modifiable for now
+    allow_modify = False
 
-    name = ''
-    overridable = True
-    triggered = False
+    # Returns the output state after applying the rule
+    def get_state_update(state):
+        pass
 
-    @staticmethod
-    def trigger(state):
-        return False
+    # Modify the rule. 
+    def modify(modification):
+        raise NotImplementedError('Rule modification currently not supported')
 
+class StateToTargetThemeMapping(Rule):
 
-class TurbulenceRuleGlobal(Rule):
+    name = 'stateToTheme'
 
-    name = 'TurbulenceRuleGlobal'
-    is_global = True
-    safety_belt_threshold = 60
-    safety_belt_response = { safety_belt_warning: True }
-    warm_theme_threshold = 70
-    warm_theme_response = { theme: warm }
-    quiet_theme_threshold = 80
-    quiet_theme_response = { theme: quiet }
+    def get_state_update(state):
+        if state[emotion] == happy:
+            return { theme: engaged }
+        if state[emotion] in [sad, fear, angry]:
+            return { theme: warm }
+        if state[turbulence] or state[pressure]:
+            return { theme: quiet }
+        if state[luminance] > 200:
+            return { theme: warm }
+        return { theme: RESET }
 
-    def trigger(state):
-        if TurbulenceRuleGlobal.triggered:
-            return
-        # return_dic = {safety_belt_warning: False, theme: normal}
-        return_dic = {}
-        if state[turbulence] > TurbulenceRuleGlobal.safety_belt_threshold:
-            return_dic.update(TurbulenceRuleGlobal.safety_belt_response)
-        if state[luminence] > TurbulenceRuleGlobal.warm_theme_threshold or state[emotion] in ["sad", "angry", "fear"]:
-            return_dic.update(TurbulenceRuleGlobal.warm_theme_response)
-        if state[turbulence] > TurbulenceRuleGlobal.quiet_theme_threshold:
-            return_dic.update(TurbulenceRuleGlobal.quiet_theme_response)
-        if return_dic:
-            TurbulenceRuleGlobal.triggered = True
-            TurbulenceRuleGlobalRemove.triggered = False
-        return return_dic
+class SafetyBeltWarning(Rule):
 
-class TurbulenceRuleGlobalRemove(TurbulenceRuleGlobal):
+    name = 'safetyBelt'
 
-    name = 'TurbulenceRuleGlobalRemove'
-    triggered = True
-    safety_belt_response = { safety_belt_warning: False }
-    normal_theme_response = { theme: normal }
-
-    def trigger(state):
-        if TurbulenceRuleGlobalRemove.triggered:
-            return
-        return_dic = {}
-        if state[turbulence] < TurbulenceRuleGlobalRemove.safety_belt_threshold:
-            return_dic.update(TurbulenceRuleGlobalRemove.safety_belt_response)
-            if not state[theme] == normal:
-                return_dic.update(TurbulenceRuleGlobalRemove.normal_theme_response)
-            
-            TurbulenceRuleGlobal.triggered = False
-            TurbulenceRuleGlobalRemove.triggered = True
-        return return_dic
+    def get_state_update(state):
+        return { safety_belt_warning: state[turbulence] }
 
 
-# This one should not be overridable. We let it be for test purposes
-class TurbulenceRulePersonal(Rule):
-
-    name = 'TurbulenceRulePersonal'
-    is_global = False
-    personal_entertainment_threshold = 80
-    personal_entertainment_response = { entertainment_pause: True }
-
-    override_text = 'Personal Entertainment System will be disabled due to high turbulence. ' + \
-    'This is overridable only for test purposes'
-    override_relevant_fields = [turbulence]
-
-    def trigger(state):
-        if state[turbulence] > TurbulenceRulePersonal.personal_entertainment_threshold:
-            return TurbulenceRulePersonal.personal_entertainment_response
-        return {}
-
-adjustment_rules = [TurbulenceRuleGlobal, TurbulenceRuleGlobalRemove, TurbulenceRulePersonal]
-name_to_rule = { rule.name: rule for rule in adjustment_rules }
+rules = [StateToTargetThemeMapping, SafetyBeltWarning]
+name_to_rule = { rule.name: rule for rule in rules }
