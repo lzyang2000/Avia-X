@@ -1,3 +1,4 @@
+# from emotion_recognition.src.image_emotion_demo import *
 from mock_agent import *
 from user import *
 from theme import *
@@ -5,25 +6,22 @@ from guizero import *
 import pygame
 import time
 import os
-
-rpi = True
-
-if rpi:
-    from emotion_recognition.src.image_emotion_demo import *
-    import board
-    import busio
-    import adafruit_tsl2591
-    import csv
-    import RPi.GPIO as GPIO
-    import ledout
-    GPIO_pin = 4 #Pressure Pin
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(GPIO_pin,GPIO.IN)
+import sys
 
 class Session:
 
-    def __init__(self):
-        self.agents = []
+    def __init__(self, rpi=False):
+        self.rpi = rpi
+        if rpi:
+            import board
+            import busio
+            import adafruit_tsl2591
+            import csv
+            import RPi.GPIO as GPIO
+            import ledout
+            GPIO_pin = 4 #Pressure Pin
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(GPIO_pin,GPIO.IN)
 
 class GUISession(Session):
 
@@ -32,9 +30,10 @@ class GUISession(Session):
     idx = 0
     theme_obj = None
 
-    def __init__(self):
+    def __init__(self, rpi=False):
 
         # pygame.mixer.pre_init(frequency=48000)
+        super().__init__(rpi)
         pygame.mixer.init()
         self.curr_music = None
         self.width, self.height = 500, 500
@@ -157,7 +156,7 @@ class GUISession(Session):
         self.agent.control_panel.bg = None
         if hasattr(self, 'all_infos'):
             self.all_infos.lightPi(self.output_state[theme])
-        elif rpi:
+        elif self.rpi:
             ledout.change_color(self.output_state[theme])
 
     def set_music_volume(self, vol):
@@ -187,7 +186,7 @@ class GUISession(Session):
 
     def update_state(self):
         self.idx += 1
-        if rpi:
+        if self.rpi:
             if hasattr(self, 'prev_turbulences'):
                 self.all_infos = Infos(self.idx, self.prev_turbulences)
             else:
@@ -248,11 +247,15 @@ class Infos:
     def lightPi(self, theme):
         ledout.change_color(theme)
 
-def main():
-    session = GUISession()
+def main(rpi):
+    session = GUISession(rpi)
 
 def bool_to_status(b):
     return 'High' if b else 'Low'
 
 if __name__ == '__main__':
-    main()
+    args = sys.argv
+    rpi = ''
+    if len(args) > 1:
+        rpi = args[1].split('=')[1]
+    main(rpi=rpi == 'True')

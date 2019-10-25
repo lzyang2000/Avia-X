@@ -1,1 +1,1 @@
-{"test": {"birthday": "Not Provided", "preference": {"global_theme": "Normal Theme"}, "history": []}}
+{"test": {"birthday": "Not Provided", "preference": {"global_theme": "Quiet Theme"}, "history": ["2019-10-24 16:55:25.242341 Set preference: global_theme to Engaged Theme.", "2019-10-24 16:55:29.956759 Set preference: global_theme to Quiet Theme."]}, "Ken": {"birthday": "Not Provided", "preference": {"global_theme": "Normal Theme"}, "history": []}}
